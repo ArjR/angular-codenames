@@ -1,36 +1,26 @@
 #!/usr/bin/env node
 
-/**
- * Module dependencies.
- */
-
 import * as http from "http";
 import { app } from "../app";
 import { serverPort } from "../config";
+import { ChatServer } from '../chat-server';
 
-/**
- * Get port from environment and store in Express.
- */
+// This starts the socket.io server
+let app1 = new ChatServer().getApp();
+
+// Get port from environment and store in Express.
 const port = normalizePort(process.env.PORT || serverPort);
 app.set("port", port);
 
-/**
- * Create HTTP server.
- */
+// Create HTTP server.
 const server = http.createServer(app);
 
-/**
- * Listen on provided port, on all network interfaces.
- */
-
+// Listen on provided port, on all network interfaces.
 server.listen(port);
 server.on("error", onError);
 server.on("listening", onListening);
 
-/**
- * Normalize a port into a number, string, or false.
- */
-
+// Normalize a port into a number, string, or false.
 function normalizePort(val): boolean | number {
 
   const normalizedPort = parseInt(val, 10);
@@ -48,10 +38,7 @@ function normalizePort(val): boolean | number {
   return false;
 }
 
-/**
- * Event listener for HTTP server 'error' event.
- */
-
+// Event listener for HTTP server 'error' event.
 function onError(error) {
   if (error.syscall !== "listen") {
     throw error;
@@ -78,10 +65,7 @@ function onError(error) {
   }
 }
 
-/**
- * Event listener for HTTP server 'listening' event.
- */
-
+// Event listener for HTTP server 'listening' event.
 function onListening() {
   const addr = server.address();
   const bind = typeof addr === "string"
