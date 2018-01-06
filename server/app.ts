@@ -53,10 +53,10 @@ app.use((err: any, req: express.Request, res: express.Response, next: express.Ne
 
 // This starts the API Server
 export { app };
-//console.log('Starting Server...');
+console.log('Starting Server...');
 
 
 // This starts the socket.io server
-//import { ChatServer } from './chat-server';
-//let app1 = new ChatServer().getApp();
-//export { app1 };
+import { ChatServer } from './chat-server';
+let app1 = new ChatServer().getApp();
+export { app1 };
