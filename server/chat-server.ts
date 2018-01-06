@@ -3,34 +3,28 @@ import * as express from 'express';
 import * as socketIo from 'socket.io';
 
 import { Message, User } from './model';
-import { chatServerPort } from "./config";
+import { serverPort } from "./config";
 
 export class ChatServer {
-    private app: express.Application;
     private server: Server;
     private io: SocketIO.Server;
     private port: string | number;
     private numClients: number = 0;
     private users: User[] = [];
 
-    constructor() {
-        this.createApp();
+    constructor(server: Server) {
         this.config();
-        this.createServer();
+        this.createServer(server);
         this.sockets();
         this.listen();
     }
 
-    private createApp(): void {
-        this.app = express();
-    }
-
-    private createServer(): void {
-        this.server = createServer(this.app);
-    }
-
     private config(): void {
-        this.port = process.env.PORT || chatServerPort;
+        this.port = process.env.PORT || serverPort;
+    }
+
+    private createServer(server: Server): void {
+        this.server = server;
     }
 
     private sockets(): void {
@@ -57,6 +51,7 @@ export class ChatServer {
             });
 
             socket.on('disconnect', () => {
+                this.numClients--;
                 console.log('Client disconnected');
             });
         });
@@ -76,7 +71,7 @@ export class ChatServer {
         }
     }
 
-    public getApp(): express.Application {
-        return this.app;
-    }
+    // public getApp(): express.Application {
+    //     return this.app;
+    // }
 }

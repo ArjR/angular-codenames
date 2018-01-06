@@ -18,7 +18,7 @@ import { ProfileEffects } from './store/profile/profile.effects';
 import { environment } from '../environments/environment';
 import { SocketIoModule, SocketIoConfig } from 'ng-socket-io';
 
-const config: SocketIoConfig = { url: 'http://localhost:4400', options: {} };
+const config: SocketIoConfig = { url: 'http://localhost:4300', options: {} };
 
 @NgModule({
   declarations: [

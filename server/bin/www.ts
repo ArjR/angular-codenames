@@ -5,15 +5,15 @@ import { app } from "../app";
 import { serverPort } from "../config";
 import { ChatServer } from '../chat-server';
 
-// This starts the socket.io server
-let app1 = new ChatServer().getApp();
-
 // Get port from environment and store in Express.
 const port = normalizePort(process.env.PORT || serverPort);
-app.set("port", port);
+//app.set("port", port);
 
 // Create HTTP server.
 const server = http.createServer(app);
+
+// This starts the socket.io server
+let app1 = new ChatServer(server);
 
 // Listen on provided port, on all network interfaces.
 server.listen(port);
