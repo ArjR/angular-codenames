@@ -3,9 +3,9 @@ import * as express from 'express';
 import * as socketIo from 'socket.io';
 
 import { Message, User } from './model';
+import { chatServerPort } from "./config";
 
 export class ChatServer {
-    public static readonly PORT: number = 8080;
     private app: express.Application;
     private server: Server;
     private io: SocketIO.Server;
@@ -30,7 +30,7 @@ export class ChatServer {
     }
 
     private config(): void {
-        this.port = process.env.PORT || ChatServer.PORT;
+        this.port = process.env.PORT || chatServerPort;
     }
 
     private sockets(): void {
