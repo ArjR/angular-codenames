@@ -57,6 +57,6 @@ console.log('Starting Server...');
 
 
 // This starts the socket.io server
-import { ChatServer } from './chat-server';
-let app1 = new ChatServer().getApp();
-export { app1 };
+// import { ChatServer } from './chat-server';
+// let app1 = new ChatServer().getApp();
+// export { app1 };
