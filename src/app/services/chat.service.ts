@@ -6,7 +6,8 @@ import { Socket } from 'ng-socket-io';
 @Injectable()
 export class ChatService {
 
-    constructor(private socket: Socket) { }
+    constructor(
+        private socket: Socket) { }
 
     getMessage() {
         return this.socket

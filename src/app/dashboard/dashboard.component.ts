@@ -1,7 +1,9 @@
 import { Component } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Store } from '@ngrx/store';
+import { Subscription } from "rxjs";
 import { Observable } from 'rxjs/Observable';
+import { TimerObservable } from "rxjs/observable/TimerObservable";
 
 import { FEED_ADD, FEED_REMOVE, FEED_ADD_COMMENT } from '../store/feed/feed.actions';
 import { IAppState } from '../store';
@@ -16,10 +18,13 @@ import { Message, User, ChatMessage } from '../../../server/model';
 })
 export class DashboardComponent {
   form: FormGroup;
-
   feeds$: Observable<{}>;
+  subscription: Subscription;
 
-  constructor(public fb: FormBuilder, public store: Store<IAppState>, public chatService: ChatService) {
+  constructor(
+    public fb: FormBuilder,
+    public store: Store<IAppState>,
+    public chatService: ChatService) {
 
     this.feeds$ = store.select('feed');
 
@@ -37,10 +42,11 @@ export class DashboardComponent {
         console.log(msg);
       });
 
-
-    this.chatService.sendMessage('test');
+    let timer = TimerObservable.create(1000, 1000);
+    this.subscription = timer.subscribe(t => {
+      this.chatService.sendMessage(Date.now().toString());
+    });
   }
-
 
   submitFeed(): void {
 
@@ -79,5 +85,9 @@ export class DashboardComponent {
       payload: feed
     });
 
+  }
+
+  ngOnDestroy() {
+    this.subscription.unsubscribe();
   }
 }

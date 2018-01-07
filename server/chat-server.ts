@@ -46,7 +46,7 @@ export class ChatServer {
             console.log('Total Clients: %s', this.numClients);
 
             socket.on('message', (m: Message) => {
-                console.log('[server](message): %s', JSON.stringify(m));
+                console.log('[Message] %s: %s', this.getClientName(socket), JSON.stringify(m));
                 this.io.emit('message', m);
             });
 
@@ -61,7 +61,7 @@ export class ChatServer {
         var currentUser: User;
         this.users.forEach(user => {
             if (user.socketId == socket.id)
-            currentUser = user;
+                currentUser = user;
         });
 
         if (currentUser) {
