@@ -39,7 +39,7 @@ export class DashboardComponent {
     this.receieverSubscription = this.chatService
       .getMessage()
       .subscribe(msg => {
-        console.log(Date.now(), msg.content);
+        console.log(`${Date.now()} ${msg.content} Server:${msg.timestamp} --- Delta:${Date.now() - msg.timestamp}ms`);
       });
 
     let timer = TimerObservable.create(1000, 1000);

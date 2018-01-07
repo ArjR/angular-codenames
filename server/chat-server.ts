@@ -45,8 +45,7 @@ export class ChatServer {
 
             socket.on('message', (m: Message) => {
 
-                let delta = Date.now() - m.timestamp;
-                let newMessage = `[Message] ${this.getClientName(socket)}: Delta is ${delta}ms, C:${m.timestamp} S:${Date.now()}`
+                let newMessage = `[Message] ${this.getClientName(socket)}: "${m.content}"`
                 console.log(newMessage);
                 m.content = newMessage;
                 this.io.emit('message', m);
