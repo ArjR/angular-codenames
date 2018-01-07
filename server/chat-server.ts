@@ -40,15 +40,13 @@ export class ChatServer {
 
             // New client connection and client count
             this.numClients++;
-            this.logAndEmitMessage(new Message(new Date(), `[Connected]: ${this.getClientName(socket)} on port ${this.port}`));
-            this.logAndEmitMessage(new Message(new Date(), `[Stats] Total Clients: ${this.numClients}`));
+            this.logAndEmitMessage(new Message(Date.now(), `[Connected]: ${this.getClientName(socket)} on port ${this.port}`));
+            this.logAndEmitMessage(new Message(Date.now(), `[Stats] Total Clients: ${this.numClients}`));
 
             socket.on('message', (m: Message) => {
 
-                let messageTimestamp = new Date(m.timestamp);
-                let serverTimestamp = new Date();
-                let delta = serverTimestamp.getTime() - messageTimestamp.getTime();
-                let newMessage = `[Message] ${this.getClientName(socket)}: "${m.content}" Delta is ${delta}`
+                let delta = Date.now() - m.timestamp;
+                let newMessage = `[Message] ${this.getClientName(socket)}: Delta is ${delta}ms, C:${m.timestamp} S:${Date.now()}`
                 console.log(newMessage);
                 m.content = newMessage;
                 this.io.emit('message', m);
@@ -56,7 +54,7 @@ export class ChatServer {
 
             socket.on('disconnect', () => {
                 this.numClients--;
-                this.logAndEmitMessage(new Message(new Date(), `[Disconnected]: ${this.getClientName(socket)}`));
+                this.logAndEmitMessage(new Message(Date.now(), `[Disconnected]: ${this.getClientName(socket)}`));
             });
         });
     }

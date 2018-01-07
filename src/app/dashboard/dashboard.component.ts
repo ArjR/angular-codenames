@@ -39,12 +39,12 @@ export class DashboardComponent {
     this.receieverSubscription = this.chatService
       .getMessage()
       .subscribe(msg => {
-        console.log(msg.timestamp, msg.content);
+        console.log(Date.now(), msg.content);
       });
 
     let timer = TimerObservable.create(1000, 1000);
     this.messageSubscription = timer.subscribe(t => {
-      let message: Message = new Message(new Date(), 'Message generated');
+      let message: Message = new Message(Date.now(), 'Message generated');
       this.chatService.sendMessage(message);
     });
   }
