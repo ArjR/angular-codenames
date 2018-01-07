@@ -8,7 +8,7 @@ import { TimerObservable } from "rxjs/observable/TimerObservable";
 import { FEED_ADD, FEED_REMOVE, FEED_ADD_COMMENT } from '../store/feed/feed.actions';
 import { IAppState } from '../store';
 import { ChatService } from '../services/chat.service';
-import { Message, User, ChatMessage } from '../../../server/model';
+import { Message, User } from '../../../server/model';
 
 @Component({
   selector: 'app-dashboard',
@@ -39,12 +39,13 @@ export class DashboardComponent {
     this.receieverSubscription = this.chatService
       .getMessage()
       .subscribe(msg => {
-        console.log(msg);
+        console.log(msg.timestamp, msg.content);
       });
 
     let timer = TimerObservable.create(1000, 1000);
     this.messageSubscription = timer.subscribe(t => {
-      this.chatService.sendMessage(Date.now().toString());
+      let message: Message = new Message(new Date(), 'Message generated');
+      this.chatService.sendMessage(message);
     });
   }
 
@@ -90,6 +91,6 @@ export class DashboardComponent {
   ngOnDestroy() {
     this.messageSubscription.unsubscribe();
     this.receieverSubscription.unsubscribe();
-    //this.chatService.disconnect();
+    this.chatService.disconnect();
   }
 }

@@ -40,17 +40,23 @@ export class ChatServer {
 
             // New client connection and client count
             this.numClients++;
-            //this.io.emit('stats', { numClients: this.numClients });
-            this.logAndEmitMessage(`[Connected]: ${this.getClientName(socket)} on port ${this.port}`);
-            this.logAndEmitMessage(`[Stats] Total Clients: ${this.numClients}`);
+            this.logAndEmitMessage(new Message(new Date(), `[Connected]: ${this.getClientName(socket)} on port ${this.port}`));
+            this.logAndEmitMessage(new Message(new Date(), `[Stats] Total Clients: ${this.numClients}`));
 
             socket.on('message', (m: Message) => {
-                this.logAndEmitMessage(`[Message] ${this.getClientName(socket)}: ${JSON.stringify(m)}`);
+
+                let messageTimestamp = new Date(m.timestamp);
+                let serverTimestamp = new Date();
+                let delta = serverTimestamp.getTime() - messageTimestamp.getTime();
+                let newMessage = `[Message] ${this.getClientName(socket)}: "${m.content}" Delta is ${delta}`
+                console.log(newMessage);
+                m.content = newMessage;
+                this.io.emit('message', m);
             });
 
             socket.on('disconnect', () => {
                 this.numClients--;
-                this.logAndEmitMessage(`[Disconnected]: ${this.getClientName(socket)}`);
+                this.logAndEmitMessage(new Message(new Date(), `[Disconnected]: ${this.getClientName(socket)}`));
             });
         });
     }
@@ -69,8 +75,8 @@ export class ChatServer {
         }
     }
 
-    private logAndEmitMessage(text: string) {
-        console.log(text);
-        this.io.emit('message', text);
+    private logAndEmitMessage(message: Message) {
+        console.log(message.content);
+        this.io.emit('message', message);
     }
 }
