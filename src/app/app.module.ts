@@ -20,9 +20,9 @@ import { SocketIoModule, SocketIoConfig } from 'ng-socket-io';
 
 import { serverPort } from '../../server/config';
 
-const config: SocketIoConfig = { url: location.origin == 'https://angular-codenames.herokuapp.com' ? location.origin : 'http://localhost:4300', options: {} };
+//const config: SocketIoConfig = { url: location.origin == 'https://angular-codenames.herokuapp.com' ? location.origin : 'http://localhost:4300', options: {} };
 
-
+const config: SocketIoConfig = { url: 'https://angular-codenames.herokuapp.com', options: {} };
 //const config: SocketIoConfig = { url: 'http://localhost:4300', options: {} };
 //const config: SocketIoConfig = { url: 'http://localhost:' + (process.env.PORT || serverPort), options: {} };
 //const config: SocketIoConfig = { url: location.origin, options: {} };
