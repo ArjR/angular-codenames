@@ -1,4 +1,4 @@
-import { createServer, Server } from 'http';
+import * as http from "http";
 import * as express from 'express';
 import * as socketIo from 'socket.io';
 
@@ -6,13 +6,13 @@ import { Message, User } from './model';
 import { serverPort } from "./config";
 
 export class ChatServer {
-    private server: Server;
+    private server: http.Server;
     private io: SocketIO.Server;
     private port: string | number;
     private numClients: number = 0;
     private users: User[] = [];
 
-    constructor(server: Server) {
+    constructor(server: http.Server) {
         this.config();
         this.createServer(server);
         this.sockets();
@@ -23,7 +23,7 @@ export class ChatServer {
         this.port = process.env.PORT || serverPort;
     }
 
-    private createServer(server: Server): void {
+    private createServer(server: http.Server): void {
         this.server = server;
     }
 
@@ -70,8 +70,4 @@ export class ChatServer {
             return 'Client (' + socket.id + ')'
         }
     }
-
-    // public getApp(): express.Application {
-    //     return this.app;
-    // }
 }

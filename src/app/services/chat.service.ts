@@ -1,13 +1,14 @@
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs/Observable'
-import 'rxjs/add/operator/map';
 import { Socket } from 'ng-socket-io';
 
 @Injectable()
 export class ChatService {
 
     constructor(
-        private socket: Socket) { }
+        private socket: Socket) {
+            socket.connect();
+         }
 
     getMessage() {
         return this.socket
@@ -18,5 +19,9 @@ export class ChatService {
     sendMessage(msg: string) {
         this.socket
             .emit("message", msg);
+    }
+
+    disconnect(){
+        this.socket.disconnect();
     }
 }

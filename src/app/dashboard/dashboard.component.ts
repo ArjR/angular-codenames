@@ -19,7 +19,8 @@ import { Message, User, ChatMessage } from '../../../server/model';
 export class DashboardComponent {
   form: FormGroup;
   feeds$: Observable<{}>;
-  subscription: Subscription;
+  messageSubscription: Subscription;
+  receieverSubscription: Subscription;
 
   constructor(
     public fb: FormBuilder,
@@ -35,15 +36,14 @@ export class DashboardComponent {
   }
 
   ngOnInit() {
-    this.chatService
+    this.receieverSubscription = this.chatService
       .getMessage()
       .subscribe(msg => {
-        //this.msg = "1st "+msg;
         console.log(msg);
       });
 
     let timer = TimerObservable.create(1000, 1000);
-    this.subscription = timer.subscribe(t => {
+    this.messageSubscription = timer.subscribe(t => {
       this.chatService.sendMessage(Date.now().toString());
     });
   }
@@ -88,6 +88,8 @@ export class DashboardComponent {
   }
 
   ngOnDestroy() {
-    this.subscription.unsubscribe();
+    this.messageSubscription.unsubscribe();
+    this.receieverSubscription.unsubscribe();
+    //this.chatService.disconnect();
   }
 }
