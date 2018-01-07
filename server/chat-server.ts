@@ -40,10 +40,11 @@ export class ChatServer {
 
             // New client connection and client count
             this.numClients++;
-            this.io.emit('stats', { numClients: this.numClients });
-
+            //this.io.emit('stats', { numClients: this.numClients });
             console.log('New Connection: %s on port %s.', this.getClientName(socket), this.port);
             console.log('Total Clients: %s', this.numClients);
+            this.io.emit('New Connection: %s on port %s.', this.getClientName(socket), this.port);
+            this.io.emit('Total Clients: %s', this.numClients);
 
             socket.on('message', (m: Message) => {
                 console.log('[Message] %s: %s', this.getClientName(socket), JSON.stringify(m));
@@ -52,7 +53,8 @@ export class ChatServer {
 
             socket.on('disconnect', () => {
                 this.numClients--;
-                console.log('Client disconnected');
+                console.log('%s disconnected', this.getClientName(socket));
+                this.io.emit('%s disconnected', this.getClientName(socket));
             });
         });
     }
