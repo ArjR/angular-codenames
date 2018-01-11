@@ -15,8 +15,8 @@ import { environment } from '../environments/environment';
 import { SocketIoModule, SocketIoConfig } from 'ng-socket-io';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 
-//const config: SocketIoConfig = { url: 'https://angular-codenames.herokuapp.com', options: {} };
-const config: SocketIoConfig = { url: 'http://localhost:4300', options: {} };
+const config: SocketIoConfig = { url: 'https://angular-codenames.herokuapp.com', options: {} };
+//const config: SocketIoConfig = { url: 'http://localhost:4300', options: {} };
 
 @NgModule({
   declarations: [
