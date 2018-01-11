@@ -9,17 +9,14 @@ import { StoreDevtoolsModule } from '@ngrx/store-devtools';
 
 import { AppComponent } from './app.component';
 import { routes } from './app.router';
-import { metaReducers, reducers } from './store';
 import { SharedModule } from './shared/shared.module';
-import { WeatherService } from './weather/weather.service';
-import { WeatherEffects } from './store/weather/weather.effects';
-import { FeedEffects } from './store/feed/feed.effects';
-import { ProfileEffects } from './store/profile/profile.effects';
+import { WeatherService } from './services/weather.service';
 import { environment } from '../environments/environment';
 import { SocketIoModule, SocketIoConfig } from 'ng-socket-io';
+import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 
-const config: SocketIoConfig = { url: 'https://angular-codenames.herokuapp.com', options: {} };
-//const config: SocketIoConfig = { url: 'http://localhost:4300', options: {} };
+//const config: SocketIoConfig = { url: 'https://angular-codenames.herokuapp.com', options: {} };
+const config: SocketIoConfig = { url: 'http://localhost:4300', options: {} };
 
 @NgModule({
   declarations: [
@@ -28,15 +25,11 @@ const config: SocketIoConfig = { url: 'https://angular-codenames.herokuapp.com',
   imports: [
     BrowserModule,
     SocketIoModule.forRoot(config),
+    NgbModule.forRoot(),
     SharedModule,
     FormsModule,
     HttpClientModule,
-    StoreModule.forRoot(reducers, { metaReducers }),
-    EffectsModule.forRoot([
-      ProfileEffects,
-      FeedEffects,
-      WeatherEffects
-    ]),
+
     !environment.production ? StoreDevtoolsModule.instrument({ maxAge: 50 }) : [],
     RouterModule.forRoot(
       routes,

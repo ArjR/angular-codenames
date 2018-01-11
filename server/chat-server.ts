@@ -1,9 +1,10 @@
-import * as http from "http";
+import * as http from 'http';
 import * as express from 'express';
 import * as socketIo from 'socket.io';
 
 import { Message, User } from './model';
-import { serverPort } from "./config";
+import { serverPort } from './config';
+import { RandomWordService } from './services/random-word.service';
 
 export class ChatServer {
     private server: http.Server;
@@ -11,8 +12,11 @@ export class ChatServer {
     private port: string | number;
     private numClients: number = 0;
     private users: User[] = [];
+    private randomWordService: RandomWordService = new RandomWordService();
 
-    constructor(server: http.Server) {
+    constructor(
+        server: http.Server        
+    ) {
         this.config();
         this.createServer(server);
         this.sockets();
