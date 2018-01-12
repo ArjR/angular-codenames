@@ -1,25 +1,25 @@
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs/Observable'
 import { Socket } from 'ng-socket-io';
-import { Message } from '../../../server/model';
+import { Message, GameCommand } from '../../../server/model/game-classes';
 
 @Injectable()
-export class ChatService {
+export class SocketService {
 
     constructor(
         private socket: Socket) {
         socket.connect();
     }
 
-    getMessage() {
+    getGameDebug() {
         return this.socket
-            .fromEvent<Message>("message")
+            .fromEvent<Message>(GameCommand.GAME_DEBUG)
             .map(data => data);
     }
 
-    sendMessage(msg: Message) {
+    sendGameDebug(msg: Message) {
         this.socket
-            .emit("message", msg);
+            .emit(GameCommand.GAME_DEBUG, msg);
     }
 
     disconnect() {
