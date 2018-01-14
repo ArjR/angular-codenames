@@ -32,7 +32,7 @@ if (app.get("env") === "production") {
 
   // in production mode run application from dist/client folder
   app.use(express.static(path.join(__dirname, "/../client")));
-  app.use('/data', express.static(path.join(__dirname, "/../server/data")));
+  //app.use('/data', express.static(path.join(__dirname, "/../server/data")));
 }
 else {
   //app.use(express.static(__dirname));
@@ -40,7 +40,7 @@ else {
   // Serve static .txt files only inside the /data/ directory
   //app.use('/data', express.static(__dirname + '/data'));
 
-  app.use('/data', express.static(path.join(__dirname, '/../server/data')))
+  //app.use('/data', express.static(path.join(__dirname, '/../server/data')))
 }
 
 // catch 404 and forward to error handler
