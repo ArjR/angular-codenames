@@ -18,6 +18,8 @@ import { ProfileEffects } from './store/profile/profile.effects';
 import { environment } from '../environments/environment';
 import { SocketIoModule, SocketIoConfig } from 'ng-socket-io';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { ToasterModule, ToasterService } from 'angular2-toaster';
 
 const config: SocketIoConfig = { url: 'https://angular-codenames.herokuapp.com', options: {} };
 //const config: SocketIoConfig = { url: 'http://localhost:4300', options: {} };
@@ -28,6 +30,8 @@ const config: SocketIoConfig = { url: 'https://angular-codenames.herokuapp.com',
   ],
   imports: [
     BrowserModule,
+    BrowserAnimationsModule,
+    ToasterModule,
     SocketIoModule.forRoot(config),
     NgbModule.forRoot(),
     SharedModule,

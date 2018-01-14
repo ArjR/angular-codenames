@@ -9,6 +9,7 @@ import { Store } from '@ngrx/store';
 import { IAppState } from './store';
 import { USER_GET } from './store/profile/profile.actions';
 import { ISimpleResponse } from './shared/interfaces/simple.interface';
+import { ToasterService, ToasterConfig, Toast } from 'angular2-toaster';
 
 @Component({
   selector: 'app-root',
@@ -19,7 +20,10 @@ export class AppComponent implements OnInit {
 
   observable$: Observable<ISimpleResponse>;
 
-  constructor(private http: HttpClient, private store: Store<IAppState>) {}
+  constructor(
+    private http: HttpClient, 
+    private store: Store<IAppState>,
+    private toasterService: ToasterService) { }
 
   ngOnInit() {
 
@@ -28,5 +32,20 @@ export class AppComponent implements OnInit {
     this.store.dispatch({
       type: USER_GET
     });
+  }
+
+  public toasterConfig : ToasterConfig = new ToasterConfig({
+    positionClass: 'toast-top-right',
+    animation: 'fade'
+  });
+
+  popToast() {
+    var toast: Toast = {
+      type: 'info',
+      title: 'Here is a Toast Title',
+      body: 'Here is a Toast Body'
+    };
+    
+    this.toasterService.pop(toast);
   }
 }
