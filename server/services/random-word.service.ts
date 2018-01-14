@@ -5,7 +5,7 @@ import * as _ from "lodash";
 export class RandomWordService {
 
     private officialWords: string[] = [];
-    private officialWordsFileLocation: string = '../data/official.txt';
+    private officialWordsFileLocation: string = '/../../server/data/official.txt';
 
     constructor() {
         this.initialiseWords();
@@ -17,6 +17,8 @@ export class RandomWordService {
             _.forEach(words, word => {
                 this.officialWords.push(word);
             });
+
+            console.log(this.officialWords);
         });
     }
 

@@ -12,7 +12,7 @@ export class ChatServer {
     private port: string | number;
     private numClients: number = 0;
     private users: User[] = [];
-    //private randomWordService: RandomWordService = new RandomWordService();
+    private randomWordService: RandomWordService = new RandomWordService();
 
     constructor(
         server: http.Server

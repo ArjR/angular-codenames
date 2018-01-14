@@ -38,7 +38,9 @@ else {
   //app.use(express.static(__dirname));
 
   // Serve static .txt files only inside the /data/ directory
-  app.use('/data', express.static(__dirname + '/data'));
+  //app.use('/data', express.static(__dirname + '/data'));
+
+  app.use('/data', express.static(path.join(__dirname, '/../server/data')))
 }
 
 // catch 404 and forward to error handler
