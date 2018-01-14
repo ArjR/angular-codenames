@@ -30,14 +30,14 @@ app.use("/api/user", userRouter);
 
 if (app.get("env") === "production") {
 
-  // in production mode run application from dist folder
+  // in production mode run application from dist/client folder
   app.use(express.static(path.join(__dirname, "/../client")));
 }
 
-//app.use(express.static(__dirname));
+app.use(express.static(__dirname));
 
 // Serve static .txt files only inside the /data/ directory
-app.use('/data', express.static(__dirname + '/data'));
+//app.use('/data', express.static(__dirname + '/data'));
 
 // catch 404 and forward to error handler
 app.use((req: express.Request, res: express.Response, next) => {
