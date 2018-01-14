@@ -6,10 +6,12 @@ import { DashboardComponent } from './dashboard.component';
 import { routes } from './dashboard.router';
 import { SharedModule } from '../shared/shared.module';
 import { RouterModule } from '@angular/router';
+import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 
 @NgModule({
   imports: [
     CommonModule,
+    NgbModule.forRoot(),
     FormsModule,
     ReactiveFormsModule,
     SharedModule,
