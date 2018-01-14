@@ -7,7 +7,6 @@ import { TimerObservable } from "rxjs/observable/TimerObservable";
 
 import { SocketService } from '../services/socket.service';
 import { Message, User } from '../../../server/model/game-classes';
-import { NgbModal, ModalDismissReasons } from '@ng-bootstrap/ng-bootstrap';
 import { ToasterService, Toast } from 'angular2-toaster';
 
 @Component({
@@ -25,7 +24,6 @@ export class DashboardComponent {
   constructor(
     private fb: FormBuilder,
     private socketService: SocketService,
-    private modalService: NgbModal,
     private toasterService: ToasterService) {
 
     this.form = fb.group({
@@ -46,24 +44,6 @@ export class DashboardComponent {
       let message: Message = new Message(Date.now(), 'Message generated');
       this.socketService.sendGameDebug(message);
     });
-  }
-
-  public open(content) {
-    this.modalService.open(content).result.then((result) => {
-      this.modalCloseResult = `Closed with: ${result}`;
-    }, (reason) => {
-      this.modalCloseResult = `Dismissed ${this.getDismissReason(reason)}`;
-    });
-  }
-
-  private getDismissReason(reason: any): string {
-    if (reason === ModalDismissReasons.ESC) {
-      return 'by pressing ESC';
-    } else if (reason === ModalDismissReasons.BACKDROP_CLICK) {
-      return 'by clicking on a backdrop';
-    } else {
-      return  `with: ${reason}`;
-    }
   }
 
   public popToast() {
