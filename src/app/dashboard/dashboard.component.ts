@@ -7,6 +7,7 @@ import { TimerObservable } from "rxjs/observable/TimerObservable";
 
 import { SocketService } from '../services/socket.service';
 import { Message, User } from '../../../server/model/game-classes';
+import { NgbModal, ModalDismissReasons } from '@ng-bootstrap/ng-bootstrap';
 
 @Component({
   selector: 'app-dashboard',
@@ -14,14 +15,16 @@ import { Message, User } from '../../../server/model/game-classes';
   styleUrls: ['./dashboard.component.css'],
   providers: [SocketService]
 })
-export class DashboardComponent {
+export class DashboardComponent {  
   form: FormGroup;
+  modalCloseResult: string;
   messageSubscription: Subscription;
   receieverSubscription: Subscription;
 
   constructor(
-    public fb: FormBuilder,
-    public socketService: SocketService) {
+    private fb: FormBuilder,
+    private socketService: SocketService,
+    private modalService: NgbModal) {
 
     this.form = fb.group({
       text: ['', Validators.required],
@@ -41,6 +44,24 @@ export class DashboardComponent {
       let message: Message = new Message(Date.now(), 'Message generated');
       this.socketService.sendGameDebug(message);
     });
+  }
+
+  public open(content) {
+    this.modalService.open(content).result.then((result) => {
+      this.modalCloseResult = `Closed with: ${result}`;
+    }, (reason) => {
+      this.modalCloseResult = `Dismissed ${this.getDismissReason(reason)}`;
+    });
+  }
+
+  private getDismissReason(reason: any): string {
+    if (reason === ModalDismissReasons.ESC) {
+      return 'by pressing ESC';
+    } else if (reason === ModalDismissReasons.BACKDROP_CLICK) {
+      return 'by clicking on a backdrop';
+    } else {
+      return  `with: ${reason}`;
+    }
   }
 
   ngOnDestroy() {
