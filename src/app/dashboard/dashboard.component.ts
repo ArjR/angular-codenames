@@ -8,6 +8,7 @@ import { TimerObservable } from "rxjs/observable/TimerObservable";
 import { SocketService } from '../services/socket.service';
 import { Message, User } from '../../../server/model/game-classes';
 import { NgbModal, ModalDismissReasons } from '@ng-bootstrap/ng-bootstrap';
+import { ToasterService, Toast } from 'angular2-toaster';
 
 @Component({
   selector: 'app-dashboard',
@@ -24,7 +25,8 @@ export class DashboardComponent {
   constructor(
     private fb: FormBuilder,
     private socketService: SocketService,
-    private modalService: NgbModal) {
+    private modalService: NgbModal,
+    private toasterService: ToasterService) {
 
     this.form = fb.group({
       text: ['', Validators.required],
@@ -62,6 +64,16 @@ export class DashboardComponent {
     } else {
       return  `with: ${reason}`;
     }
+  }
+
+  public popToast() {
+    var toast: Toast = {
+      type: 'info',
+      title: 'Here is a Toast Title',
+      body: 'Here is a Toast Body'
+    };
+    
+    this.toasterService.pop(toast);
   }
 
   ngOnDestroy() {

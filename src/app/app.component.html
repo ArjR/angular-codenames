@@ -2,6 +2,8 @@
 
 <app-ui-sub-navigation [title]="(observable$ | async)?.title" [description]="(observable$ | async)?.text"></app-ui-sub-navigation>
 
+<toaster-container [toasterconfig]="toasterConfig"></toaster-container>
+
 <div class="main">
   <router-outlet></router-outlet>
 </div>

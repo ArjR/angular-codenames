@@ -9,6 +9,7 @@
   <app-ui-input label="Text" placeholder="Enter text...." [control]="form.get('text')"></app-ui-input>
 </form>
 
+<!-- Specifically for Modal -->
 <ng-template #content let-c="close" let-d="dismiss">
   <div class="modal-header">
     <h4 class="modal-title">Modal title</h4>
@@ -25,6 +26,9 @@
 </ng-template>
 
 <button class="btn btn-lg btn-outline-primary" (click)="open(content)">Launch demo modal</button>
+
+<!-- For Toaster Service -->
+<button class="btn btn-success" (click)="popToast()">Pop Toast</button>
 
 <hr>
 
