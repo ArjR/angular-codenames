@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, TemplateRef  } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Store } from '@ngrx/store';
 import { Subscription } from "rxjs";
@@ -7,8 +7,9 @@ import { TimerObservable } from "rxjs/observable/TimerObservable";
 
 import { SocketService } from '../services/socket.service';
 import { Message, User } from '../../../server/model/game-classes';
-import { NgbModal, ModalDismissReasons } from '@ng-bootstrap/ng-bootstrap';
 import { ToasterService, Toast } from 'angular2-toaster';
+import { BsModalService } from 'ngx-bootstrap/modal';
+import { BsModalRef } from 'ngx-bootstrap/modal/bs-modal-ref.service';
 
 @Component({
   selector: 'app-dashboard',
@@ -16,17 +17,17 @@ import { ToasterService, Toast } from 'angular2-toaster';
   styleUrls: ['./dashboard.component.css'],
   providers: [SocketService]
 })
-export class DashboardComponent {  
+export class DashboardComponent {
   form: FormGroup;
-  modalCloseResult: string;
+  modalRef: BsModalRef;
   messageSubscription: Subscription;
   receieverSubscription: Subscription;
 
   constructor(
     private fb: FormBuilder,
     private socketService: SocketService,
-    private modalService: NgbModal,
-    private toasterService: ToasterService) {
+    private toasterService: ToasterService,
+    private modalService: BsModalService) {
 
     this.form = fb.group({
       text: ['', Validators.required],
@@ -48,32 +49,18 @@ export class DashboardComponent {
     });
   }
 
-  public open(content) {
-    this.modalService.open(content).result.then((result) => {
-      this.modalCloseResult = `Closed with: ${result}`;
-    }, (reason) => {
-      this.modalCloseResult = `Dismissed ${this.getDismissReason(reason)}`;
-    });
-  }
-
-  private getDismissReason(reason: any): string {
-    if (reason === ModalDismissReasons.ESC) {
-      return 'by pressing ESC';
-    } else if (reason === ModalDismissReasons.BACKDROP_CLICK) {
-      return 'by clicking on a backdrop';
-    } else {
-      return  `with: ${reason}`;
-    }
-  }
-
   public popToast() {
     var toast: Toast = {
       type: 'info',
       title: 'Here is a Toast Title',
       body: 'Here is a Toast Body'
     };
-    
+
     this.toasterService.pop(toast);
+  }
+
+  public openModal(template: TemplateRef<any>) {
+    this.modalRef = this.modalService.show(template);
   }
 
   ngOnDestroy() {

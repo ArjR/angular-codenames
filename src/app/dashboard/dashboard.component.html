@@ -10,26 +10,24 @@
 </form>
 
 <!-- Specifically for Modal -->
-<ng-template #content let-c="close" let-d="dismiss">
+<button class="btn btn-primary" (click)="openModal(template)">Create template modal</button>
+ 
+<ng-template #template>
   <div class="modal-header">
-    <h4 class="modal-title">Modal title</h4>
-    <button type="button" class="close" aria-label="Close" (click)="d('Cross click')">
+    <h4 class="modal-title pull-left">Modal</h4>
+    <button type="button" class="close pull-right" aria-label="Close" (click)="modalRef.hide()">
       <span aria-hidden="true">&times;</span>
     </button>
   </div>
   <div class="modal-body">
-    <p>One fine body&hellip;</p>
-  </div>
-  <div class="modal-footer">
-    <button type="button" class="btn btn-outline-dark" (click)="c('Close click')">Close</button>
+    This is a modal.
   </div>
 </ng-template>
 
-<button class="btn btn-lg btn-outline-primary" (click)="open(content)">Launch demo modal</button>
 
 <!-- For Toaster Service -->
 <button class="btn btn-success" (click)="popToast()">Pop Toast</button>
 
 <hr>
 
-<pre>{{modalCloseResult}}</pre>
+<pre>PRE HTML TAG</pre>
