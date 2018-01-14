@@ -7,7 +7,7 @@ import { ChatServer } from '../chat-server';
 
 // Get port from environment and store in Express.
 const port = normalizePort(process.env.PORT || serverPort);
-app.set("port", port);
+//app.set("port", port);
 
 // Create HTTP server.
 const server = http.createServer(app);
