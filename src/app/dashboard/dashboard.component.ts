@@ -5,29 +5,23 @@ import { Subscription } from "rxjs";
 import { Observable } from 'rxjs/Observable';
 import { TimerObservable } from "rxjs/observable/TimerObservable";
 
-import { FEED_ADD, FEED_REMOVE, FEED_ADD_COMMENT } from '../store/feed/feed.actions';
-import { IAppState } from '../store';
-import { ChatService } from '../services/chat.service';
-import { Message, User } from '../../../server/model';
+import { SocketService } from '../services/socket.service';
+import { Message, User } from '../../../server/model/game-classes';
 
 @Component({
   selector: 'app-dashboard',
   templateUrl: './dashboard.component.html',
   styleUrls: ['./dashboard.component.css'],
-  providers: [ChatService]
+  providers: [SocketService]
 })
 export class DashboardComponent {
   form: FormGroup;
-  feeds$: Observable<{}>;
   messageSubscription: Subscription;
   receieverSubscription: Subscription;
 
   constructor(
     public fb: FormBuilder,
-    public store: Store<IAppState>,
-    public chatService: ChatService) {
-
-    this.feeds$ = store.select('feed');
+    public socketService: SocketService) {
 
     this.form = fb.group({
       text: ['', Validators.required],
@@ -36,61 +30,22 @@ export class DashboardComponent {
   }
 
   ngOnInit() {
-    this.receieverSubscription = this.chatService
-      .getMessage()
+    this.receieverSubscription = this.socketService
+      .getGameDebug()
       .subscribe(msg => {
         console.log(`${Date.now()} ${msg.content} Server:${msg.timestamp} --- Delta:${Date.now() - msg.timestamp}ms`);
       });
 
-    let timer = TimerObservable.create(1000, 1000);
+    let timer = TimerObservable.create(0, 2000);
     this.messageSubscription = timer.subscribe(t => {
       let message: Message = new Message(Date.now(), 'Message generated');
-      this.chatService.sendMessage(message);
+      this.socketService.sendGameDebug(message);
     });
-  }
-
-  submitFeed(): void {
-
-    if (this.form.valid) {
-
-      this.store.dispatch({
-        type: FEED_ADD,
-        payload: this.form.value
-      });
-
-      this.form.reset();
-    }
-  }
-
-  submitCommentOnFeed(id: string, commentForm: FormGroup): void {
-
-    if (commentForm.valid) {
-
-      this.store.dispatch({
-        type: FEED_ADD_COMMENT,
-        payload: {
-          id,
-          comment: commentForm.value
-        }
-      });
-
-      commentForm.reset();
-    }
-
-  }
-
-  removeFeed(feed: {}): void {
-
-    this.store.dispatch({
-      type: FEED_REMOVE,
-      payload: feed
-    });
-
   }
 
   ngOnDestroy() {
     this.messageSubscription.unsubscribe();
     this.receieverSubscription.unsubscribe();
-    this.chatService.disconnect();
+    this.socketService.disconnect();
   }
 }
