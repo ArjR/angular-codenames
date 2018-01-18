@@ -49,12 +49,14 @@ export class Card {
 }
 
 export class User {
-    socketId: string = null;
-    userName: string = null;
-    userType: UserType = null;
+    constructor(
+        public socketId: string,
+        public userName: string,
+        public userType: UserType
+    ) { }
 }
 
-export class GameInitialise {
+export class GameSetup {
     totalCardCount: number = 25; // Total number of words
     firstTeamCardCount: number = 9;
     secondTeamCardCount: number = 8;
@@ -68,12 +70,19 @@ export class GameData {
     id: string = null; // Random guid
     cards: Card[] = [];
 
-    isRedLeaderAvailable: boolean = false;
-    isBlueLeaderAvailable: boolean = false;
+    isRedLeaderAvailable: boolean = true;
+    isBlueLeaderAvailable: boolean = true;
 
     currentCommand: GameCommand = null;
     currentRound: number = 0; // 0 - New Game, 1 - First Round
     currentTeam: Team = null;
+}
+
+export class ClientPackage {
+    constructor(
+        public gameData: GameData,
+        public user: User = null
+    ) { }
 }
 
 export class Message {
@@ -81,4 +90,18 @@ export class Message {
         public timestamp: number,
         public content: string
     ) { }
+}
+
+export class GuidGenerator {
+    public newGuid() {
+        var d = new Date().getTime();
+        if (typeof performance !== 'undefined' && typeof performance.now === 'function'){
+            d += performance.now(); //use high-precision timer if available
+        }
+        return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
+            var r = (d + Math.random() * 16) % 16 | 0;
+            d = Math.floor(d / 16);
+            return (c === 'x' ? r : (r & 0x3 | 0x8)).toString(16);
+        });
+    }
 }

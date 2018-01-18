@@ -1,6 +1,6 @@
 import * as fs from 'fs';
-import * as path from "path";
-import * as _ from "lodash";
+import * as path from 'path';
+import * as _ from 'lodash';
 import officialWords from '../data/official-words';
 
 export class RandomWordService {

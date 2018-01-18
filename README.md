@@ -67,3 +67,93 @@ All html and css are from: http://www.w3schools.com/howto/
     </td>
   </tr>
 </table>
+
+
+`Server Initialisation`
+GameSetup and GameData objects are created.
+
+`CLIENT SEND` *Authenticate*
+New Client joins
+Server checks whether any Users match the SocketId inside GameSetup
+Server returns GameData AND User = NULL/CorrectUser
+`CLIENT RECEIVE` *Authenticated (GameData, User)*
+
+`CLIENT SEND` *Login (UserType)*
+Client has already received GameData and therefore access to unallocated UserTypes.
+Client will pick a UserType and sent to Server.
+Server will check if available and allocate the user if available inside GameSetup
+`CLIENT RECEIVE` *Authenticated (GameData, User)*
+`SERVER SEND ALL` *GameStatus (GameData)*
+
+`CLIENT SEND` *Logout*
+User will logout.
+Server will deallocate the User and remove User from GameSetup
+`CLIENT RECEIVE` *Authenticated (GameData, User=NULL)*
+`SERVER SEND ALL` *GameStatus (GameData)*
+
+`SERVER SEND ALL` *GameStatus (GameData)*
+Sends the GameData to all connections
+
+`CLIENT SEND` *NewGame*
+#Check command is Leader UserType and GameData(Round != 0)
+Server will start a new game and regenerate GameData:
+                id: new guid
+                cards: randomly generated cards
+                currentRound: 0
+                currentTeam: null
+`SERVER SEND ALL` *GameStatus (GameData)*
+
+`CLIENT SEND` *GenerateWords*
+#Check command is Leader UserType and GameData(Round == 0)
+Server will adjust GameData:
+                cards: randomly generated cards
+`SERVER SEND ALL` *GameStatus (GameData)*
+
+`CLIENT SEND` *GenerateWord (id: number)*
+#Check command is Leader UserType and GameData(Round == 0)
+Server will adjust GameData:
+                cards: random specific card id
+`SERVER SEND ALL` *GameStatus (GameData)*
+
+`CLIENT SEND` *GenerateMap*
+#Check command is Leader UserType and GameData(Round == 0)
+Server will adjust GameData:
+                cards: randomly assign CardType given GameSetup settings
+                currentTeam: assign Team
+`SERVER SEND ALL` *GameStatus (GameData)*
+
+`CLIENT SEND` *StartGame*
+#Check command is Leader UserType and GameData(Round == 0)
+Server will adjust GameData:
+                currentRound: 1
+`SERVER SEND ALL` *GameStatus (GameData)*
+
+`CLIENT SEND` *SendHint (hint: string)*
+#Check command is Team Leader UserType compared with GameData(Team) and GameData(Round != 0)
+`SERVER SEND ALL` *SendHint (hint: string)*
+
+`CLIENT SEND` *GuessCard (id: number)*
+#Check command is Team User UserType compared with GameData(Team) and GameData(Round != 0)
+`SERVER SEND ALL` *GuessCard (id: number)*
+
+`CLIENT SEND` *PickCard (id: number)*
+#Check command is Team Leader UserType compared with GameData(Team) and GameData(Round != 0)
+Server plays a card and updates GameData:
+                cards: card id is isPlayed = true
+If played cardType matches GameData(Team) then
+                `SERVER SEND ALL` *GameStatus (GameData)*
+else
+                GameData:
+                                currentRound++
+                                currentTeam = OtherTeam
+                `SERVER SEND ALL` *GameStatus (GameData)*
+
+`CLIENT SEND` *NextRound*
+#Check command is Team Leader UserType compared with GameData(Team) and GameData(Round != 0)
+Server will adjust GameData:
+GameData:
+                currentRound++
+                currentTeam = OtherTeam
+`SERVER SEND ALL` *GameStatus (GameData)*
+
+*GameDebug // Additional errors*
