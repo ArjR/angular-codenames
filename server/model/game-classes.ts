@@ -63,6 +63,9 @@ export class GameSetup {
     assassinCardCount: number = 1;
     innocentCardCount: number = 7;
 
+    allTeams: Team[] = [Team.Red, Team.Blue];
+    allCardTypes: CardType[] = [CardType.RedCard, CardType.BlueCard, CardType.AssassinCard, CardType.InnocentCard];
+
     users: User[] = [];
 }
 
@@ -95,7 +98,7 @@ export class Message {
 export class GuidGenerator {
     public newGuid() {
         var d = new Date().getTime();
-        if (typeof performance !== 'undefined' && typeof performance.now === 'function'){
+        if (typeof performance !== 'undefined' && typeof performance.now === 'function') {
             d += performance.now(); //use high-precision timer if available
         }
         return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {

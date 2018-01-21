@@ -3,7 +3,7 @@ import * as express from 'express';
 import * as socketIo from 'socket.io';
 import * as _ from 'lodash';
 
-import { User, Message, GameCommand, GameSetup, GameData, ClientPackage, UserType, GuidGenerator, Card } from './model/game-classes';
+import { User, Message, GameCommand, GameSetup, GameData, ClientPackage, UserType, CardType, Team, Card, GuidGenerator } from './model/game-classes';
 import { serverPort } from './config';
 import { RandomWordService } from './services/random-word.service';
 
@@ -108,28 +108,6 @@ export class ChatServer {
                 }
             });
 
-
-            // `CLIENT SEND` *GenerateWord (id: number)*
-            // #Check command is Leader UserType and GameData(Round == 0)
-            // Server will adjust GameData:
-            //                 cards: random specific card id
-            // `SERVER SEND ALL` *GameStatus (GameData)*
-
-
-            this.createCards();
-            this.generateNewWords();
-            console.log(this.gameData.cards[5]);
-            this.generateNewWord(5);
-            console.log(this.gameData.cards[5]);
-            this.generateNewWord(5);
-            console.log(this.gameData.cards[5]);
-            this.generateNewWord(5);
-            console.log(this.gameData.cards[5]);
-            this.generateNewWord(5);
-            console.log(this.gameData.cards[5]);
-            this.generateNewWord(5);
-            console.log(this.gameData.cards[5]);
-
             socket.on(GameCommand.GENERATE_WORD, (id: number) => {
                 if (this.isCurrentUserLeader(socket) && this.gameData.currentRound == 0) {
                     this.generateNewWord(id);
@@ -139,8 +117,31 @@ export class ChatServer {
                 }
             });
 
+            this.createCards();
+            this.generateNewWords();
+            this.generateNewWord(5);
+            this.generateNewWord(5);
+            this.generateNewWord(5);
+            this.generateNewWord(5);
+            this.generateNewWord(5);            
+            this.generateNewMap();
+
+            // `CLIENT SEND` *GenerateMap*
+            // #Check command is Leader UserType and GameData(Round == 0)
+            // Server will adjust GameData:
+            //                 cards: randomly assign CardType given GameSetup settings
+            //                 currentTeam: assign Team
+            // `SERVER SEND ALL` *GameStatus (GameData)*
+
+
+
             socket.on(GameCommand.GENERATE_MAP, () => {
-                // Placeholder
+                if (this.isCurrentUserLeader(socket) && this.gameData.currentRound == 0) {
+                    this.generateNewMap();
+
+                    this.io.emit(GameCommand.GAME_STATUS, new ClientPackage(this.gameData))
+                    console.log(this.gameData);
+                }
             });
 
             socket.on(GameCommand.START_GAME, () => {
@@ -237,18 +238,22 @@ export class ChatServer {
             card.word = randomWords[i];
             i++;
         });
+
+        console.log('🎲  GenerateNewWords');
     }
 
     private generateNewWord(id: number): void {
         let randomWords: string[] = [];
         let keepSearching = true;
-        let oldCard: Card = null;
+        let oldCard: Card = null;        
 
         this.gameData.cards.forEach(card => {
             if (card.id == id) oldCard = card;
 
             randomWords.push(card.word);
         });
+
+        let oldWord: string = oldCard.word;
 
         while (keepSearching) {
             let newWord = this.randomWordService.getRandomOfficialWord();
@@ -258,8 +263,43 @@ export class ChatServer {
                     keepSearching = false;
                 }
             }
-        }        
+        }
+
+        console.log('🎲  GenerateNewWord [', oldWord, '] with [', oldCard.word, ']');
     }
+
+    private generateNewMap(): void {
+        // Pick which team starts
+        this.gameData.currentTeam = _.sample(this.gameSetup.allTeams);
+
+        let redCardCount = this.gameData.currentTeam == Team.Red ? this.gameSetup.firstTeamCardCount : this.gameSetup.secondTeamCardCount;
+        let blueCardCount = this.gameData.currentTeam == Team.Blue ? this.gameSetup.firstTeamCardCount : this.gameSetup.secondTeamCardCount;
+
+        this.gameData.cards.forEach(card => {
+            card.cardType = _.sample(this.gameSetup.allCardTypes);
+            let isMaxCard = false;
+
+            while (this.gameData.cards.filter(x => x.cardType == CardType.RedCard).length > redCardCount ||
+                this.gameData.cards.filter(x => x.cardType == CardType.BlueCard).length > blueCardCount ||
+                this.gameData.cards.filter(x => x.cardType == CardType.AssassinCard).length > this.gameSetup.assassinCardCount ||
+                this.gameData.cards.filter(x => x.cardType == CardType.InnocentCard).length > this.gameSetup.innocentCardCount) {
+                console.log('Rerolling ❌ ', card.word, CardType[card.cardType]);
+                card.cardType = _.sample(this.gameSetup.allCardTypes)
+                console.log('Rerolled  🔘 ', card.word, CardType[card.cardType]);
+            }
+
+            console.log('Assigned  ✅ ', card.word, CardType[card.cardType]);
+        });
+
+        console.log('RedCardCount:', this.gameData.cards.filter(x => x.cardType == CardType.RedCard).length);
+        console.log('BlueCardCount:', this.gameData.cards.filter(x => x.cardType == CardType.BlueCard).length);
+        console.log('AssassinCardCount:', this.gameData.cards.filter(x => x.cardType == CardType.AssassinCard).length);
+        console.log('InnocentCardCount:', this.gameData.cards.filter(x => x.cardType == CardType.InnocentCard).length);
+    }
+
+
+
+
 
     private getCurrentUser(socket: SocketIO.Socket): User {
         return _.find(this.gameSetup.users, user => user.socketId == socket.id);
