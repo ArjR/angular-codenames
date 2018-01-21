@@ -74,11 +74,14 @@ export class GameData {
     cards: Card[] = [];
 
     isRedLeaderAvailable: boolean = true;
-    isBlueLeaderAvailable: boolean = true;
-
+    isBlueLeaderAvailable: boolean = true;    
+    
     currentCommand: GameCommand = null;
     currentRound: number = 0; // 0 - New Game, 1 - First Round
     currentTeam: Team = null;
+    
+    isGameEnded: boolean = false;
+    winningTeam: Team = null;
 }
 
 export class ClientPackage {

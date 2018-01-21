@@ -6,6 +6,7 @@ import * as _ from 'lodash';
 import { User, Message, GameCommand, GameSetup, GameData, ClientPackage, UserType, CardType, Team, Card, GuidGenerator } from './model/game-classes';
 import { serverPort } from './config';
 import { RandomWordService } from './services/random-word.service';
+import { isContext } from 'vm';
 
 export class ChatServer {
     private server: http.Server;
@@ -58,9 +59,9 @@ export class ChatServer {
                 let currentUser = this.getCurrentUser(socket);
 
                 if (currentUser) {
-                    socket.emit(GameCommand.AUTHENTICATED, new ClientPackage(this.gameData, currentUser));
+                    socket.emit(GameCommand.AUTHENTICATED, new ClientPackage(this.gameData, currentUser)); // Send to Client
                 } else {
-                    socket.emit(GameCommand.AUTHENTICATED, new ClientPackage(this.gameData));
+                    socket.emit(GameCommand.AUTHENTICATED, new ClientPackage(this.gameData)); // Send to Client
                 }
             });
 
@@ -68,100 +69,165 @@ export class ChatServer {
                 let newUser: User = this.loginAndCreateNewUser(userType, socket);
 
                 if (newUser) {
-                    socket.emit(GameCommand.AUTHENTICATED, new ClientPackage(this.gameData, newUser));
-                    this.io.emit(GameCommand.GAME_STATUS, new ClientPackage(this.gameData)); // Probably dont need to resend to specific client
+                    socket.emit(GameCommand.AUTHENTICATED, new ClientPackage(this.gameData, newUser)); // Send to Client
+                    socket.broadcast.emit(GameCommand.GAME_STATUS, new ClientPackage(this.gameData)); // Send to ALL - EXCEPT Client
                 } else {
-                    socket.emit(GameCommand.AUTHENTICATED, new ClientPackage(this.gameData));
+                    socket.emit(GameCommand.AUTHENTICATED, new ClientPackage(this.gameData)); // Send to Client
                 }
             });
 
             socket.on(GameCommand.LOGOUT, () => {
                 let sendToAll = this.removeCurrentUser(socket);
 
-                socket.emit(GameCommand.AUTHENTICATED, new ClientPackage(this.gameData));
+                socket.emit(GameCommand.AUTHENTICATED, new ClientPackage(this.gameData)); // Send to Client
 
                 if (sendToAll) {
-                    this.io.emit(GameCommand.GAME_STATUS, new ClientPackage(this.gameData))
+                    this.io.emit(GameCommand.GAME_STATUS, new ClientPackage(this.gameData)) // Send to ALL
                 };
             });
 
             socket.on(GameCommand.NEW_GAME, () => {
                 if (this.isCurrentUserLeader(socket)) {
                     this.gameData.id = new GuidGenerator().newGuid();
+                    this.gameData.currentCommand = GameCommand.NEW_GAME;
                     this.gameData.currentRound = 0;
                     this.gameData.currentTeam = null;
 
                     this.createCards();
                     this.generateNewWords();
 
-                    this.io.emit(GameCommand.GAME_STATUS, new ClientPackage(this.gameData))
-                    console.log(this.gameData);
+                    this.io.emit(GameCommand.GAME_STATUS, new ClientPackage(this.gameData)) // Send to ALL
+                    this.logGameData();
                 }
             });
 
             socket.on(GameCommand.GENERATE_WORDS, () => {
                 if (this.isCurrentUserLeader(socket) && this.gameData.currentRound == 0) {
+                    this.gameData.currentCommand = GameCommand.GENERATE_WORDS;
                     this.generateNewWords();
 
-                    this.io.emit(GameCommand.GAME_STATUS, new ClientPackage(this.gameData))
-                    console.log(this.gameData);
+                    this.io.emit(GameCommand.GAME_STATUS, new ClientPackage(this.gameData)) // Send to ALL
                 }
             });
 
             socket.on(GameCommand.GENERATE_WORD, (id: number) => {
                 if (this.isCurrentUserLeader(socket) && this.gameData.currentRound == 0) {
+                    this.gameData.currentCommand = GameCommand.GENERATE_WORD;
                     this.generateNewWord(id);
 
-                    this.io.emit(GameCommand.GAME_STATUS, new ClientPackage(this.gameData))
-                    console.log(this.gameData);
+                    this.io.emit(GameCommand.GAME_STATUS, new ClientPackage(this.gameData)) // Send to ALL
                 }
             });
 
-            this.createCards();
-            this.generateNewWords();
-            this.generateNewWord(5);
-            this.generateNewWord(5);
-            this.generateNewWord(5);
-            this.generateNewWord(5);
-            this.generateNewWord(5);            
-            this.generateNewMap();
-
-            // `CLIENT SEND` *GenerateMap*
-            // #Check command is Leader UserType and GameData(Round == 0)
-            // Server will adjust GameData:
-            //                 cards: randomly assign CardType given GameSetup settings
-            //                 currentTeam: assign Team
-            // `SERVER SEND ALL` *GameStatus (GameData)*
-
-
-
             socket.on(GameCommand.GENERATE_MAP, () => {
                 if (this.isCurrentUserLeader(socket) && this.gameData.currentRound == 0) {
+                    this.gameData.currentCommand = GameCommand.GENERATE_MAP;
                     this.generateNewMap();
 
-                    this.io.emit(GameCommand.GAME_STATUS, new ClientPackage(this.gameData))
-                    console.log(this.gameData);
+                    this.io.emit(GameCommand.GAME_STATUS, new ClientPackage(this.gameData)) // Send to ALL
+                    this.logGameData();
                 }
             });
 
             socket.on(GameCommand.START_GAME, () => {
-                // Placeholder
+                if (this.isCurrentUserLeader(socket) && this.gameData.currentRound == 0) {
+                    this.gameData.currentCommand = GameCommand.START_GAME;
+                    this.gameData.currentRound = 1; // Start game!
+
+                    this.io.emit(GameCommand.GAME_STATUS, new ClientPackage(this.gameData)) // Send to ALL
+                    this.logGameData();
+                }
             });
 
-            socket.on(GameCommand.SEND_HINT, () => {
-                // Placeholder
+            socket.on(GameCommand.SEND_HINT, (hint: string) => {
+                if (this.isCurrentUserTeamLeader(socket) && this.gameData.currentRound !== 0) {
+                    this.gameData.currentCommand = GameCommand.SEND_HINT;
+
+                    this.io.emit(GameCommand.SEND_HINT, hint) // Send to ALL (Maybe we want 'Send to ALL - EXCEPT Client'?)
+                }
             });
 
-            socket.on(GameCommand.GUESS_CARD, () => {
-                // Placeholder
+            socket.on(GameCommand.GUESS_CARD, (id: number) => {
+                if (this.isCurrentUserTeam(socket) && this.gameData.currentRound !== 0) {
+                    this.gameData.currentCommand = GameCommand.GUESS_CARD;
+
+                    this.io.emit(GameCommand.GUESS_CARD, id) // Send to ALL (Maybe we want 'Send to ALL - EXCEPT Client'?)
+                }
             });
 
-            socket.on(GameCommand.PICK_CARD, () => {
-                // Placeholder
+            socket.on(GameCommand.PICK_CARD, (id: number) => {
+                if (this.isCurrentUserTeamLeader(socket) && this.gameData.currentRound !== 0) {
+                    this.gameData.currentCommand = GameCommand.PICK_CARD;
+
+                    let card = _.find(this.gameData.cards, card => card.id == id);
+
+                    // Check card can be played
+                    if (card.isPlayed) {
+                        return;
+                    }
+
+                    // Play card
+                    card.isPlayed = true;
+
+                    // Determine whether card matches current team
+                    if ((card.cardType == CardType.RedCard && this.gameData.currentTeam == Team.Red) ||
+                        (card.cardType == CardType.BlueCard && this.gameData.currentTeam == Team.Blue)) {
+                        // Correct Team Card has been chosen
+                        let redCardTotalCount = this.gameData.cards.filter(x => x.cardType == CardType.RedCard).length;
+                        let blueCardTotalCount = this.gameData.cards.filter(x => x.cardType == CardType.BlueCard).length;
+                        let redCardCount = this.gameData.cards.filter(x => x.cardType == CardType.RedCard && x.isPlayed == true).length;
+                        let blueCardCount = this.gameData.cards.filter(x => x.cardType == CardType.BlueCard && x.isPlayed == true).length;
+
+                        if (redCardCount >= redCardTotalCount) {
+                            this.gameData.isGameEnded = true;
+                            this.gameData.winningTeam = Team.Red;
+                        } else if (blueCardCount >= blueCardTotalCount) {
+                            this.gameData.isGameEnded = true;
+                            this.gameData.winningTeam = Team.Blue;
+                        }
+                    } else if (card.cardType == CardType.AssassinCard) {
+                        // Assassin Card has been chosen
+                        this.gameData.isGameEnded = true;
+                        this.gameData.winningTeam = this.gameData.currentTeam == Team.Red ? Team.Blue : Team.Red;
+                    } else {
+                        // Innocent Card has been chosen OR Incorrect Team Card has been chosen
+                        this.gameData.currentRound++;
+                        this.gameData.currentTeam = this.gameData.currentTeam == Team.Red ? Team.Blue : Team.Red;
+                    }
+
+                    this.io.emit(GameCommand.GAME_STATUS, new ClientPackage(this.gameData)) // Send to ALL
+                    this.logGameData();
+                }
             });
+
+            this.gameData.id = new GuidGenerator().newGuid();
+            this.gameData.currentCommand = GameCommand.NEW_GAME;
+            this.gameData.currentRound = 0;
+            this.gameData.currentTeam = null;
+            this.createCards();
+            this.generateNewWords();
+            this.logGameData();
+            this.generateNewWord(5);
+            this.generateNewWord(5);
+            this.generateNewWord(5);
+
+            this.generateNewMap();
+            this.logGameData();
+            this.generateNewMap();
+            this.logGameData();
+
+            this.gameData.currentRound = 1;
+            this.logGameData();
 
             socket.on(GameCommand.NEXT_ROUND, () => {
-                // Placeholder
+                if (this.isCurrentUserTeamLeader(socket) && this.gameData.currentRound !== 0) {
+                    this.gameData.currentCommand = GameCommand.NEXT_ROUND;
+                    this.gameData.currentRound++;
+                    this.gameData.currentTeam = this.gameData.currentTeam == Team.Red ? Team.Blue : Team.Red;
+
+                    this.io.emit(GameCommand.GAME_STATUS, new ClientPackage(this.gameData)) // Send to ALL
+                    this.logGameData();
+                }
             });
 
             socket.on(GameCommand.GAME_DEBUG, (message: Message) => {
@@ -239,13 +305,13 @@ export class ChatServer {
             i++;
         });
 
-        console.log('🎲  GenerateNewWords');
+        console.log(`🎲  GenerateNewWords [${randomWords}]`);
     }
 
     private generateNewWord(id: number): void {
         let randomWords: string[] = [];
         let keepSearching = true;
-        let oldCard: Card = null;        
+        let oldCard: Card = null;
 
         this.gameData.cards.forEach(card => {
             if (card.id == id) oldCard = card;
@@ -265,10 +331,15 @@ export class ChatServer {
             }
         }
 
-        console.log('🎲  GenerateNewWord [', oldWord, '] with [', oldCard.word, ']');
+        console.log(`🎲  GenerateNewWord [${oldWord}] with [${oldCard.word}]`);
     }
 
     private generateNewMap(): void {
+        // Wipe current CardTypes
+        this.gameData.cards.forEach(card => {
+            card.cardType = null;
+        });
+
         // Pick which team starts
         this.gameData.currentTeam = _.sample(this.gameSetup.allTeams);
 
@@ -283,23 +354,19 @@ export class ChatServer {
                 this.gameData.cards.filter(x => x.cardType == CardType.BlueCard).length > blueCardCount ||
                 this.gameData.cards.filter(x => x.cardType == CardType.AssassinCard).length > this.gameSetup.assassinCardCount ||
                 this.gameData.cards.filter(x => x.cardType == CardType.InnocentCard).length > this.gameSetup.innocentCardCount) {
-                console.log('Rerolling ❌ ', card.word, CardType[card.cardType]);
+                console.log(`❌  Rerolling ${card.word} ${CardType[card.cardType]}`);
                 card.cardType = _.sample(this.gameSetup.allCardTypes)
-                console.log('Rerolled  🔘 ', card.word, CardType[card.cardType]);
+
+                console.log(`🔘  Rerolled  ${card.word} ${CardType[card.cardType]}`);
             }
 
-            console.log('Assigned  ✅ ', card.word, CardType[card.cardType]);
+            console.log(`✅  Assigned  ${card.word} ${CardType[card.cardType]}`);
         });
 
-        console.log('RedCardCount:', this.gameData.cards.filter(x => x.cardType == CardType.RedCard).length);
-        console.log('BlueCardCount:', this.gameData.cards.filter(x => x.cardType == CardType.BlueCard).length);
-        console.log('AssassinCardCount:', this.gameData.cards.filter(x => x.cardType == CardType.AssassinCard).length);
-        console.log('InnocentCardCount:', this.gameData.cards.filter(x => x.cardType == CardType.InnocentCard).length);
+        this.gameSetup.allCardTypes.forEach(cardType => {
+            console.log(`${CardType[cardType]} Count: ${this.gameData.cards.filter(x => x.cardType == cardType).length}`);
+        })
     }
-
-
-
-
 
     private getCurrentUser(socket: SocketIO.Socket): User {
         return _.find(this.gameSetup.users, user => user.socketId == socket.id);
@@ -310,6 +377,30 @@ export class ChatServer {
         if (!currentUser) return false;
 
         if (currentUser.userType == UserType.RedLeader || currentUser.userType == UserType.BlueLeader) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    private isCurrentUserTeamLeader(socket: SocketIO.Socket): boolean {
+        let currentUser: User = this.getCurrentUser(socket);
+        if (!currentUser) return false;
+
+        if ((currentUser.userType == UserType.RedLeader && this.gameData.currentTeam == Team.Red) ||
+            (currentUser.userType == UserType.BlueLeader && this.gameData.currentTeam == Team.Blue)) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    private isCurrentUserTeam(socket: SocketIO.Socket): boolean {
+        let currentUser: User = this.getCurrentUser(socket);
+        if (!currentUser) return false;
+
+        if ((currentUser.userType == UserType.RedUser && this.gameData.currentTeam == Team.Red) ||
+            (currentUser.userType == UserType.BlueUser && this.gameData.currentTeam == Team.Blue)) {
             return true;
         } else {
             return false;
@@ -363,10 +454,61 @@ export class ChatServer {
     private clientDisconnected(socket: SocketIO.Socket): void {
         this.numClients--;
         this.logAndGameDebug(new Message(Date.now(), `[Disconnected]: ${this.getClientName(socket)}`));
+        this.logAndGameDebug(new Message(Date.now(), `[Stats] Total Clients: ${this.numClients}`));
     }
 
     private logAndGameDebug(message: Message): void {
         console.log(message.content);
         this.io.emit(GameCommand.GAME_DEBUG, message);
+    }
+
+    private logGameData() {
+        console.log(` \x1b[4m\x1b[42mGameData\x1b[0m`);
+        console.log(` \x1b[32m[id]:\x1b[0m ${this.gameData.id}`);
+        console.log(` \x1b[32m[Red Leader Available]:\x1b[0m ${this.gameData.isRedLeaderAvailable ? '✅' : '☐'}`);
+        console.log(` \x1b[32m[Blue Leader Available]:\x1b[0m ${this.gameData.isBlueLeaderAvailable ? '✅' : '☐'}`);
+        console.log(` \x1b[32m[Command]:\x1b[0m ${this.gameData.currentCommand}`);
+        console.log(` \x1b[32m[Round]:\x1b[0m ${this.gameData.currentRound}`);
+        console.log(` \x1b[32m[Team]:\x1b[0m ${Team[this.gameData.currentTeam]}`);
+
+        // Currently hardcode the GameData as groups of 5 cards
+        let i = 0;
+        while (i < this.gameData.cards.length) {
+
+            let consoleString: string = '';
+            consoleString += ' ' + this.cardString(this.gameData.cards[i]) + ' ';
+            consoleString += ' ' + this.cardString(this.gameData.cards[i + 1]) + ' ';
+            consoleString += ' ' + this.cardString(this.gameData.cards[i + 2]) + ' ';
+            consoleString += ' ' + this.cardString(this.gameData.cards[i + 3]) + ' ';
+            consoleString += ' ' + this.cardString(this.gameData.cards[i + 4]) + ' ';
+
+            console.log(consoleString);
+            i = i + 5;
+        }
+    }
+
+    private cardString(card: Card): string {
+
+        let consoleString: string = null;
+
+        switch (card.cardType) {
+            case CardType.RedCard:
+                consoleString = `\x1b[41m[${card.word}]\x1b[0m`;
+                break;
+            case CardType.BlueCard:
+                consoleString = `\x1b[44m[${card.word}]\x1b[0m`;
+                break;
+            case CardType.AssassinCard:
+                consoleString = `\x1b[4m[${card.word}]\x1b[0m`;
+                break;
+            case CardType.InnocentCard:
+                consoleString = `\x1b[43m[${card.word}]\x1b[0m`;
+                break;
+            case null:
+                consoleString = `[${card.word}]`;
+                break;
+        }
+
+        return consoleString;
     }
 }
