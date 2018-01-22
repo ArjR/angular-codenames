@@ -10,93 +10,93 @@
 </form>
 
 <div *ngIf="gameData && gameData.cards && gameData.cards.length == 25">
-  <div class="row">
-    <div class="col" [ngClass]="assignCardTypeClass(gameData.cards[0])" (click)="callGenerateWord(0)">
-      {{gameData.cards[0].word}}
+  <div class="row mb-2">
+    <div class="col px-2">
+      <button type="button" class="btn btn-block" [ngClass]="assignCardTypeClass(gameData.cards[0])" (click)="callGenerateWord(0)">{{gameData.cards[0].word}}</button>
     </div>
-    <div class="col" [ngClass]="assignCardTypeClass(gameData.cards[1])" (click)="callGenerateWord(1)">
-      {{gameData.cards[1].word}}
+    <div class="col px-2">
+      <button type="button" class="btn btn-block" [ngClass]="assignCardTypeClass(gameData.cards[1])" (click)="callGenerateWord(1)">{{gameData.cards[1].word}}</button>
     </div>
-    <div class="col" [ngClass]="assignCardTypeClass(gameData.cards[2])" (click)="callGenerateWord(2)">
-      {{gameData.cards[2].word}}
+    <div class="col px-2">
+      <button type="button" class="btn btn-block" [ngClass]="assignCardTypeClass(gameData.cards[2])" (click)="callGenerateWord(2)">{{gameData.cards[2].word}}</button>
     </div>
-    <div class="col" [ngClass]="assignCardTypeClass(gameData.cards[3])" (click)="callGenerateWord(3)">
-      {{gameData.cards[3].word}}
+    <div class="col px-2">
+      <button type="button" class="btn btn-block" [ngClass]="assignCardTypeClass(gameData.cards[3])" (click)="callGenerateWord(3)">{{gameData.cards[3].word}}</button>
     </div>
-    <div class="col" [ngClass]="assignCardTypeClass(gameData.cards[4])" (click)="callGenerateWord(4)">
-      {{gameData.cards[4].word}}
-    </div>
-  </div>
-
-  <div class="row">
-    <div class="col" [ngClass]="assignCardTypeClass(gameData.cards[5])" (click)="callGenerateWord(5)">
-      {{gameData.cards[5].word}}
-    </div>
-    <div class="col" [ngClass]="assignCardTypeClass(gameData.cards[6])" (click)="callGenerateWord(6)">
-      {{gameData.cards[6].word}}
-    </div>
-    <div class="col" [ngClass]="assignCardTypeClass(gameData.cards[7])" (click)="callGenerateWord(7)">
-      {{gameData.cards[7].word}}
-    </div>
-    <div class="col" [ngClass]="assignCardTypeClass(gameData.cards[8])" (click)="callGenerateWord(8)">
-      {{gameData.cards[8].word}}
-    </div>
-    <div class="col" [ngClass]="assignCardTypeClass(gameData.cards[9])" (click)="callGenerateWord(9)">
-      {{gameData.cards[9].word}}
+    <div class="col px-2">
+      <button type="button" class="btn btn-block" [ngClass]="assignCardTypeClass(gameData.cards[4])" (click)="callGenerateWord(4)">{{gameData.cards[4].word}}</button>
     </div>
   </div>
 
-  <div class="row">
-    <div class="col" [ngClass]="assignCardTypeClass(gameData.cards[10])" (click)="callGenerateWord(10)">
-      {{gameData.cards[10].word}}
+  <div class="row mb-2">
+    <div class="col px-2">
+      <button type="button" class="btn btn-block" [ngClass]="assignCardTypeClass(gameData.cards[5])" (click)="callGenerateWord(5)">{{gameData.cards[5].word}}</button>
     </div>
-    <div class="col" [ngClass]="assignCardTypeClass(gameData.cards[11])" (click)="callGenerateWord(11)">
-      {{gameData.cards[11].word}}
+    <div class="col px-2">
+      <button type="button" class="btn btn-block" [ngClass]="assignCardTypeClass(gameData.cards[6])" (click)="callGenerateWord(6)">{{gameData.cards[6].word}}</button>
     </div>
-    <div class="col" [ngClass]="assignCardTypeClass(gameData.cards[12])" (click)="callGenerateWord(12)">
-      {{gameData.cards[12].word}}
+    <div class="col px-2">
+      <button type="button" class="btn btn-block" [ngClass]="assignCardTypeClass(gameData.cards[7])" (click)="callGenerateWord(7)">{{gameData.cards[7].word}}</button>
     </div>
-    <div class="col" [ngClass]="assignCardTypeClass(gameData.cards[13])" (click)="callGenerateWord(13)">
-      {{gameData.cards[13].word}}
+    <div class="col px-2">
+      <button type="button" class="btn btn-block" [ngClass]="assignCardTypeClass(gameData.cards[8])" (click)="callGenerateWord(8)">{{gameData.cards[8].word}}</button>
     </div>
-    <div class="col" [ngClass]="assignCardTypeClass(gameData.cards[14])" (click)="callGenerateWord(14)">
-      {{gameData.cards[14].word}}
-    </div>
-  </div>
-
-  <div class="row">
-    <div class="col" [ngClass]="assignCardTypeClass(gameData.cards[15])" (click)="callGenerateWord(15)">
-      {{gameData.cards[15].word}}
-    </div>
-    <div class="col" [ngClass]="assignCardTypeClass(gameData.cards[16])" (click)="callGenerateWord(16)">
-      {{gameData.cards[16].word}}
-    </div>
-    <div class="col" [ngClass]="assignCardTypeClass(gameData.cards[17])" (click)="callGenerateWord(17)">
-      {{gameData.cards[17].word}}
-    </div>
-    <div class="col" [ngClass]="assignCardTypeClass(gameData.cards[18])" (click)="callGenerateWord(18)">
-      {{gameData.cards[18].word}}
-    </div>
-    <div class="col" [ngClass]="assignCardTypeClass(gameData.cards[19])" (click)="callGenerateWord(19)">
-      {{gameData.cards[19].word}}
+    <div class="col px-2">
+      <button type="button" class="btn btn-block" [ngClass]="assignCardTypeClass(gameData.cards[9])" (click)="callGenerateWord(9)">{{gameData.cards[9].word}}</button>
     </div>
   </div>
 
-  <div class="row">
-    <div class="col" [ngClass]="assignCardTypeClass(gameData.cards[20])" (click)="callGenerateWord(20)">
-      {{gameData.cards[20].word}}
+  <div class="row mb-2">
+    <div class="col px-2">
+      <button type="button" class="btn btn-block" [ngClass]="assignCardTypeClass(gameData.cards[10])" (click)="callGenerateWord(10)">{{gameData.cards[10].word}}</button>
     </div>
-    <div class="col" [ngClass]="assignCardTypeClass(gameData.cards[21])" (click)="callGenerateWord(21)">
-      {{gameData.cards[21].word}}
+    <div class="col px-2">
+      <button type="button" class="btn btn-block" [ngClass]="assignCardTypeClass(gameData.cards[11])" (click)="callGenerateWord(11)">{{gameData.cards[11].word}}</button>
     </div>
-    <div class="col" [ngClass]="assignCardTypeClass(gameData.cards[22])" (click)="callGenerateWord(22)">
-      {{gameData.cards[22].word}}
+    <div class="col px-2">
+      <button type="button" class="btn btn-block" [ngClass]="assignCardTypeClass(gameData.cards[12])" (click)="callGenerateWord(12)">{{gameData.cards[12].word}}</button>
     </div>
-    <div class="col" [ngClass]="assignCardTypeClass(gameData.cards[23])" (click)="callGenerateWord(23)">
-      {{gameData.cards[23].word}}
+    <div class="col px-2">
+      <button type="button" class="btn btn-block" [ngClass]="assignCardTypeClass(gameData.cards[13])" (click)="callGenerateWord(13)">{{gameData.cards[13].word}}</button>
     </div>
-    <div class="col" [ngClass]="assignCardTypeClass(gameData.cards[24])" (click)="callGenerateWord(24)">
-      {{gameData.cards[24].word}}
+    <div class="col px-2">
+      <button type="button" class="btn btn-block" [ngClass]="assignCardTypeClass(gameData.cards[14])" (click)="callGenerateWord(14)">{{gameData.cards[14].word}}</button>
+    </div>
+  </div>
+
+  <div class="row mb-2">
+    <div class="col px-2">
+      <button type="button" class="btn btn-block" [ngClass]="assignCardTypeClass(gameData.cards[15])" (click)="callGenerateWord(15)">{{gameData.cards[15].word}}</button>
+    </div>
+    <div class="col px-2">
+      <button type="button" class="btn btn-block" [ngClass]="assignCardTypeClass(gameData.cards[16])" (click)="callGenerateWord(16)">{{gameData.cards[16].word}}</button>
+    </div>
+    <div class="col px-2">
+      <button type="button" class="btn btn-block" [ngClass]="assignCardTypeClass(gameData.cards[17])" (click)="callGenerateWord(17)">{{gameData.cards[17].word}}</button>
+    </div>
+    <div class="col px-2">
+      <button type="button" class="btn btn-block" [ngClass]="assignCardTypeClass(gameData.cards[18])" (click)="callGenerateWord(18)">{{gameData.cards[18].word}}</button>
+    </div>
+    <div class="col px-2">
+      <button type="button" class="btn btn-block" [ngClass]="assignCardTypeClass(gameData.cards[19])" (click)="callGenerateWord(19)">{{gameData.cards[19].word}}</button>
+    </div>
+  </div>
+
+  <div class="row mb-2">
+    <div class="col px-2">
+      <button type="button" class="btn btn-block" [ngClass]="assignCardTypeClass(gameData.cards[20])" (click)="callGenerateWord(20)">{{gameData.cards[20].word}}</button>
+    </div>
+    <div class="col px-2">
+      <button type="button" class="btn btn-block" [ngClass]="assignCardTypeClass(gameData.cards[21])" (click)="callGenerateWord(21)">{{gameData.cards[21].word}}</button>
+    </div>
+    <div class="col px-2">
+      <button type="button" class="btn btn-block" [ngClass]="assignCardTypeClass(gameData.cards[22])" (click)="callGenerateWord(22)">{{gameData.cards[22].word}}</button>
+    </div>
+    <div class="col px-2">
+      <button type="button" class="btn btn-block" [ngClass]="assignCardTypeClass(gameData.cards[23])" (click)="callGenerateWord(23)">{{gameData.cards[23].word}}</button>
+    </div>
+    <div class="col px-2">
+      <button type="button" class="btn btn-block" [ngClass]="assignCardTypeClass(gameData.cards[24])" (click)="callGenerateWord(24)">{{gameData.cards[24].word}}</button>
     </div>
   </div>
 </div>

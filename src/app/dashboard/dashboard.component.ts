@@ -172,16 +172,16 @@ export class DashboardComponent {
 
     switch (card.cardType) {
       case CardType.RedCard:
-        classString = 'bg-danger';
+        classString = 'btn-danger';
         break;
       case CardType.BlueCard:
-        classString = 'bg-primary';
+        classString = 'btn-primary';
         break;
       case CardType.AssassinCard:
-        classString = 'bg-dark';
+        classString = 'btn-dark';
         break;
       case CardType.InnocentCard:
-        classString = 'bg-secondary';
+        classString = 'btn-secondary';
         break;
       case null:
         classString = '';

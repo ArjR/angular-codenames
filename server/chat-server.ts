@@ -364,6 +364,9 @@ export class ChatServer {
         let redCardCount = this.gameData.currentTeam == Team.Red ? this.gameSetup.firstTeamCardCount : this.gameSetup.secondTeamCardCount;
         let blueCardCount = this.gameData.currentTeam == Team.Blue ? this.gameSetup.firstTeamCardCount : this.gameSetup.secondTeamCardCount;
 
+        // Randomise the Assassin Card
+        _.sample(this.gameData.cards).cardType = CardType.AssassinCard;
+
         this.gameData.cards.forEach(card => {
             card.cardType = _.sample(this.gameSetup.allCardTypes);
             let isMaxCard = false;
