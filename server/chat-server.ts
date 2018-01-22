@@ -55,6 +55,25 @@ export class ChatServer {
             // New client connection and client count
             this.clientConnected(socket);
 
+            // this.gameData.id = new GuidGenerator().newGuid();
+            // this.gameData.currentCommand = GameCommand.NEW_GAME;
+            // this.gameData.currentRound = 0;
+            // this.gameData.currentTeam = null;
+            // this.createCards();
+            // this.generateNewWords();
+            // this.logGameData();
+            // this.generateNewWord(5);
+            // this.generateNewWord(5);
+            // this.generateNewWord(5);
+
+            // this.generateNewMap();
+            // this.logGameData();
+            // this.generateNewMap();
+            // this.logGameData();
+
+            // this.gameData.currentRound = 1;
+            // this.logGameData();       
+
             socket.on(GameCommand.AUTHENTICATE, () => {
                 let currentUser = this.getCurrentUser(socket);
 
@@ -74,6 +93,8 @@ export class ChatServer {
                 } else {
                     socket.emit(GameCommand.AUTHENTICATED, new ClientPackage(this.gameData)); // Send to Client
                 }
+
+                this.logGameData();
             });
 
             socket.on(GameCommand.LOGOUT, () => {
@@ -84,6 +105,8 @@ export class ChatServer {
                 if (sendToAll) {
                     this.io.emit(GameCommand.GAME_STATUS, new ClientPackage(this.gameData)) // Send to ALL
                 };
+
+                this.logGameData();
             });
 
             socket.on(GameCommand.NEW_GAME, () => {
@@ -200,25 +223,6 @@ export class ChatServer {
                 }
             });
 
-            this.gameData.id = new GuidGenerator().newGuid();
-            this.gameData.currentCommand = GameCommand.NEW_GAME;
-            this.gameData.currentRound = 0;
-            this.gameData.currentTeam = null;
-            this.createCards();
-            this.generateNewWords();
-            this.logGameData();
-            this.generateNewWord(5);
-            this.generateNewWord(5);
-            this.generateNewWord(5);
-
-            this.generateNewMap();
-            this.logGameData();
-            this.generateNewMap();
-            this.logGameData();
-
-            this.gameData.currentRound = 1;
-            this.logGameData();
-
             socket.on(GameCommand.NEXT_ROUND, () => {
                 if (this.isCurrentUserTeamLeader(socket) && this.gameData.currentRound !== 0) {
                     this.gameData.currentCommand = GameCommand.NEXT_ROUND;
@@ -270,6 +274,11 @@ export class ChatServer {
 
         if (userType == UserType.BlueUser) {
             newUser = new User(socket.id, UserType.BlueUser.toString(), UserType.BlueUser);
+            this.gameSetup.users.push(newUser);
+        }
+
+        if (userType == UserType.Spectator) {
+            newUser = new User(socket.id, UserType.Spectator.toString(), UserType.Spectator);
             this.gameSetup.users.push(newUser);
         }
 
@@ -424,7 +433,7 @@ export class ChatServer {
             sendToAll = true;
         }
 
-        this.gameSetup.users = _.remove(this.gameSetup.users, user => user.socketId == socket.id);
+        _.remove(this.gameSetup.users, user => user.socketId == socket.id);
 
         return sendToAll;
     }
@@ -447,7 +456,7 @@ export class ChatServer {
         this.logAndGameDebug(new Message(Date.now(), `[Stats] Total Clients: ${this.numClients}`));
 
         // To Client
-        let testMessage: Message = new Message(Date.now(), '--------------------LOGGED IN---------------------');
+        let testMessage: Message = new Message(Date.now(), 'LOGGED IN');
         socket.emit(GameCommand.GAME_DEBUG, testMessage);
     }
 

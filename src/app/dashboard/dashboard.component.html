@@ -9,24 +9,130 @@
   <app-ui-input label="Text" placeholder="Enter text...." [control]="form.get('text')"></app-ui-input>
 </form>
 
-<!-- Specifically for Modal -->
-<button class="btn btn-primary" (click)="openModal(template)">Create template modal</button>
- 
-<ng-template #template>
-  <div class="modal-header">
-    <h4 class="modal-title pull-left">Modal</h4>
-    <button type="button" class="close pull-right" aria-label="Close" (click)="modalRef.hide()">
-      <span aria-hidden="true">&times;</span>
-    </button>
+<div *ngIf="gameData && gameData.cards && gameData.cards.length == 25">
+  <div class="row">
+    <div class="col" [ngClass]="assignCardTypeClass(gameData.cards[0])" (click)="callGenerateWord(0)">
+      {{gameData.cards[0].word}}
+    </div>
+    <div class="col" [ngClass]="assignCardTypeClass(gameData.cards[1])" (click)="callGenerateWord(1)">
+      {{gameData.cards[1].word}}
+    </div>
+    <div class="col" [ngClass]="assignCardTypeClass(gameData.cards[2])" (click)="callGenerateWord(2)">
+      {{gameData.cards[2].word}}
+    </div>
+    <div class="col" [ngClass]="assignCardTypeClass(gameData.cards[3])" (click)="callGenerateWord(3)">
+      {{gameData.cards[3].word}}
+    </div>
+    <div class="col" [ngClass]="assignCardTypeClass(gameData.cards[4])" (click)="callGenerateWord(4)">
+      {{gameData.cards[4].word}}
+    </div>
   </div>
-  <div class="modal-body">
-    This is a modal.
-  </div>
-</ng-template>
 
+  <div class="row">
+    <div class="col" [ngClass]="assignCardTypeClass(gameData.cards[5])" (click)="callGenerateWord(5)">
+      {{gameData.cards[5].word}}
+    </div>
+    <div class="col" [ngClass]="assignCardTypeClass(gameData.cards[6])" (click)="callGenerateWord(6)">
+      {{gameData.cards[6].word}}
+    </div>
+    <div class="col" [ngClass]="assignCardTypeClass(gameData.cards[7])" (click)="callGenerateWord(7)">
+      {{gameData.cards[7].word}}
+    </div>
+    <div class="col" [ngClass]="assignCardTypeClass(gameData.cards[8])" (click)="callGenerateWord(8)">
+      {{gameData.cards[8].word}}
+    </div>
+    <div class="col" [ngClass]="assignCardTypeClass(gameData.cards[9])" (click)="callGenerateWord(9)">
+      {{gameData.cards[9].word}}
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col" [ngClass]="assignCardTypeClass(gameData.cards[10])" (click)="callGenerateWord(10)">
+      {{gameData.cards[10].word}}
+    </div>
+    <div class="col" [ngClass]="assignCardTypeClass(gameData.cards[11])" (click)="callGenerateWord(11)">
+      {{gameData.cards[11].word}}
+    </div>
+    <div class="col" [ngClass]="assignCardTypeClass(gameData.cards[12])" (click)="callGenerateWord(12)">
+      {{gameData.cards[12].word}}
+    </div>
+    <div class="col" [ngClass]="assignCardTypeClass(gameData.cards[13])" (click)="callGenerateWord(13)">
+      {{gameData.cards[13].word}}
+    </div>
+    <div class="col" [ngClass]="assignCardTypeClass(gameData.cards[14])" (click)="callGenerateWord(14)">
+      {{gameData.cards[14].word}}
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col" [ngClass]="assignCardTypeClass(gameData.cards[15])" (click)="callGenerateWord(15)">
+      {{gameData.cards[15].word}}
+    </div>
+    <div class="col" [ngClass]="assignCardTypeClass(gameData.cards[16])" (click)="callGenerateWord(16)">
+      {{gameData.cards[16].word}}
+    </div>
+    <div class="col" [ngClass]="assignCardTypeClass(gameData.cards[17])" (click)="callGenerateWord(17)">
+      {{gameData.cards[17].word}}
+    </div>
+    <div class="col" [ngClass]="assignCardTypeClass(gameData.cards[18])" (click)="callGenerateWord(18)">
+      {{gameData.cards[18].word}}
+    </div>
+    <div class="col" [ngClass]="assignCardTypeClass(gameData.cards[19])" (click)="callGenerateWord(19)">
+      {{gameData.cards[19].word}}
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col" [ngClass]="assignCardTypeClass(gameData.cards[20])" (click)="callGenerateWord(20)">
+      {{gameData.cards[20].word}}
+    </div>
+    <div class="col" [ngClass]="assignCardTypeClass(gameData.cards[21])" (click)="callGenerateWord(21)">
+      {{gameData.cards[21].word}}
+    </div>
+    <div class="col" [ngClass]="assignCardTypeClass(gameData.cards[22])" (click)="callGenerateWord(22)">
+      {{gameData.cards[22].word}}
+    </div>
+    <div class="col" [ngClass]="assignCardTypeClass(gameData.cards[23])" (click)="callGenerateWord(23)">
+      {{gameData.cards[23].word}}
+    </div>
+    <div class="col" [ngClass]="assignCardTypeClass(gameData.cards[24])" (click)="callGenerateWord(24)">
+      {{gameData.cards[24].word}}
+    </div>
+  </div>
+</div>
+
+<!-- Specifically for Modal -->
+<button type="button" class="btn btn-primary" (click)="showUserModal()">Login</button>
+
+<div class="modal fade" bsModal #userModal="bs-modal" [config]="modalConfig">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title pull-left">Choose Your Role</h4>
+      </div>
+      <div *ngIf="gameData" class="modal-body">
+        <button type="button" class="btn btn-danger btn-lg btn-block" (click)="callLogin(UserType.RedLeader)" [disabled]="!gameData.isRedLeaderAvailable">Red Leader</button>
+        <button type="button" class="btn btn-primary btn-lg btn-block" (click)="callLogin(UserType.BlueLeader)" [disabled]="!gameData.isBlueLeaderAvailable">Blue Leader</button>
+        <button type="button" class="btn btn-outline-danger btn-lg btn-block" (click)="callLogin(UserType.RedUser)">Red User</button>
+        <button type="button" class="btn btn-outline-primary btn-lg btn-block" (click)="callLogin(UserType.BlueUser)">Blue User</button>
+        <button type="button" class="btn btn-outline-secondary btn-lg btn-block" (click)="callLogin(UserType.Spectator)">Spectator</button>
+      </div>
+    </div>
+  </div>
+</div>
 
 <!-- For Toaster Service -->
 <button class="btn btn-success" (click)="popToast()">Pop Toast</button>
+
+<hr>
+
+<button class="btn btn-success" (click)="callLogout()">Logout</button>
+<button class="btn btn-success" (click)="callNewGame()">New Game</button>
+<button class="btn btn-success" (click)="callGenerateWords()">Generate Words</button>
+<button class="btn btn-success" (click)="callGenerateWord(1)">Generate Word</button>
+<button class="btn btn-success" (click)="callGenerateMap()">Generate Map</button>
+<button class="btn btn-success" (click)="callStartGame()">Start Game</button>
+<button class="btn btn-success" (click)="callSendHint()">Send Hint</button>
 
 <hr>
 
