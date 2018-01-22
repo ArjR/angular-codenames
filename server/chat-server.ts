@@ -162,11 +162,11 @@ export class ChatServer {
                 }
             });
 
-            socket.on(GameCommand.SEND_HINT, (hint: string) => {
+            socket.on(GameCommand.HINT, (hint: string) => {
                 if (this.isCurrentUserTeamLeader(socket) && this.gameData.currentRound !== 0) {
-                    this.gameData.currentCommand = GameCommand.SEND_HINT;
+                    this.gameData.currentCommand = GameCommand.HINT;
 
-                    this.io.emit(GameCommand.SEND_HINT, hint) // Send to ALL (Maybe we want 'Send to ALL - EXCEPT Client'?)
+                    this.io.emit(GameCommand.HINT, hint) // Send to ALL (Maybe we want 'Send to ALL - EXCEPT Client'?)
                 }
             });
 

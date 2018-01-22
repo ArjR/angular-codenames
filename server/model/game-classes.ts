@@ -29,7 +29,7 @@ export class GameCommand {
     static GENERATE_WORD: string = 'GenerateWord'; // Spymasters can re-generate a single word             [Client-Server]  <--
     static GENERATE_MAP: string = 'GenerateMap'; // Spymasters can re-generate the map (and starting team) [Client-Server]  <--
     static START_GAME: string = 'StartGame'; // Spymasters can start the game to RedUsers and BlueUsers    [Client-Server]  <--
-    static SEND_HINT: string = 'SendHint'; // Team Spymaster can send hint to Team Users                   [Client-Server]  <--
+    static HINT: string = 'Hint'; // Team Spymaster can send hint to Team Users                            [Client-Server]  <--
     static GUESS_CARD: string = 'GuessCard'; // Team Users can inform others of a card                     [Client-Server]  <--
     static PICK_CARD: string = 'PickCard'; // Team Spymaster can pick the card, and update game            [Client-Server]  <--
     static NEXT_ROUND: string = 'NextRound'; // Team Spymaster can choose to goto next round               [Client-Server]  <--

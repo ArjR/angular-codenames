@@ -71,15 +71,15 @@ export class SocketService {
             .emit(GameCommand.START_GAME);
     }
 
-    sendSendHint(hint: string) {
-        console.log('SEND GameCommand.SEND_HINT', hint);
+    sendHint(hint: string) {
+        console.log('SEND GameCommand.HINT', hint);
         this.socket
-            .emit(GameCommand.SEND_HINT, hint);
+            .emit(GameCommand.HINT, hint);
     }
 
-    receiveSendHint() {
+    receiveHint() {
         return this.socket
-            .fromEvent<string>(GameCommand.SEND_HINT)
+            .fromEvent<string>(GameCommand.HINT)
             .map(hint => hint);
     }
 

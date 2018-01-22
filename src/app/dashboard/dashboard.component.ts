@@ -73,9 +73,9 @@ export class DashboardComponent {
         this.gameData = clientPackage.gameData;
       });
     this.receiveSendHintSubscription = this.socketService
-      .receiveSendHint()
+      .receiveHint()
       .subscribe(hint => {
-        console.log('RECEIVE GameCommand.SEND_HINT', hint);
+        console.log('RECEIVE GameCommand.HINT', hint);
         this.popHint(hint);
       });
     this.receiveGameDebugSubscription = this.socketService
@@ -124,7 +124,7 @@ export class DashboardComponent {
   }
 
   public callSendHint() {
-    this.socketService.sendSendHint('TEST HINT');
+    this.socketService.sendHint('TEST HINT');
   }
 
   public popToast() {
