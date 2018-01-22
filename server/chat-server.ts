@@ -134,7 +134,7 @@ export class ChatServer {
             });
 
             socket.on(GameCommand.GENERATE_WORD, (id: number) => {
-                if (this.isCurrentUserLeader(socket) && this.gameData.currentRound == 0) {
+                if (this.isCurrentUserLeader(socket) && this.gameData.currentRound == 0 && this.getCard(id).cardType == null) {
                     this.gameData.currentCommand = GameCommand.GENERATE_WORD;
                     this.generateNewWord(id);
 
@@ -182,7 +182,7 @@ export class ChatServer {
                 if (this.isCurrentUserTeamLeader(socket) && this.gameData.currentRound !== 0) {
                     this.gameData.currentCommand = GameCommand.PICK_CARD;
 
-                    let card = _.find(this.gameData.cards, card => card.id == id);
+                    let card = this.getCard(id);
 
                     // Check card can be played
                     if (card.isPlayed) {
@@ -298,8 +298,17 @@ export class ChatServer {
         }
     }
 
+    private getCard(id: number): Card {
+        return _.find(this.gameData.cards, card => card.id == id);
+    }
+
     private generateNewWords(): void {
         let randomWords: string[] = [];
+
+        // Wipe current CardTypes
+        this.gameData.cards.forEach(card => {
+            card.cardType = null;
+        });
 
         while (randomWords.length < this.gameData.cards.length) {
             let newWord = this.randomWordService.getRandomOfficialWord();

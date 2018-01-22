@@ -85,11 +85,11 @@ export class DashboardComponent {
         this.popGameDebug(message);
       });
 
-    let timer = TimerObservable.create(0, 10000);
-    this.sendGameDebugSubscription = timer.subscribe(t => {
-      let message: Message = new Message(Date.now(), 'Message generated');
-      this.socketService.sendGameDebug(message);
-    });
+    // let timer = TimerObservable.create(0, 10000);
+    // this.sendGameDebugSubscription = timer.subscribe(t => {
+    //   let message: Message = new Message(Date.now(), 'Message generated');
+    //   this.socketService.sendGameDebug(message);
+    // });
 
     // Initialise first Outbound Event
     this.socketService.sendAuthenticate();
@@ -126,7 +126,6 @@ export class DashboardComponent {
   public callSendHint() {
     this.socketService.sendSendHint('TEST HINT');
   }
-
 
   public popToast() {
     let toast: Toast = {
@@ -193,11 +192,11 @@ export class DashboardComponent {
   }
 
   ngOnDestroy() {
-    this.receiveAuthenticatedSubscription.unsubscribe();
-    this.receiveGameStatusSubscription.unsubscribe();
-    this.receiveSendHintSubscription.unsubscribe();
-    this.receiveGameDebugSubscription.unsubscribe();
-    this.sendGameDebugSubscription.unsubscribe();
+    if (this.receiveAuthenticatedSubscription) this.receiveAuthenticatedSubscription.unsubscribe();
+    if (this.receiveGameStatusSubscription) this.receiveGameStatusSubscription.unsubscribe();
+    if (this.receiveSendHintSubscription) this.receiveSendHintSubscription.unsubscribe();
+    if (this.receiveGameDebugSubscription) this.receiveGameDebugSubscription.unsubscribe();
+    if (this.sendGameDebugSubscription) this.sendGameDebugSubscription.unsubscribe();
     this.socketService.disconnect();
   }
 }
