@@ -85,9 +85,12 @@ export class ChatServer {
             });
 
             socket.on(GameCommand.LOGIN, (userType: UserType) => {
+                // Remove user if already logged in
+                let sendToAll = this.removeCurrentUser(socket);
+
                 let newUser: User = this.loginAndCreateNewUser(userType, socket);
 
-                if (newUser) {
+                if (newUser || sendToAll) {
                     socket.emit(GameCommand.AUTHENTICATED, new ClientPackage(this.gameData, newUser)); // Send to Client
                     socket.broadcast.emit(GameCommand.GAME_STATUS, new ClientPackage(this.gameData)); // Send to ALL - EXCEPT Client
                 } else {
@@ -115,6 +118,10 @@ export class ChatServer {
                     this.gameData.currentCommand = GameCommand.NEW_GAME;
                     this.gameData.currentRound = 0;
                     this.gameData.currentTeam = null;
+                    this.gameData.currentHint = null;
+                    this.gameData.isGameEnded = false;
+                    this.gameData.winningTeam = null;
+                    this.gameData.areCardsReady = false;
 
                     this.createCards();
                     this.generateNewWords();
@@ -128,6 +135,7 @@ export class ChatServer {
                 if (this.isCurrentUserLeader(socket) && this.gameData.currentRound == 0) {
                     this.gameData.currentCommand = GameCommand.GENERATE_WORDS;
                     this.generateNewWords();
+                    this.gameData.areCardsReady = false;
 
                     this.io.emit(GameCommand.GAME_STATUS, new ClientPackage(this.gameData)) // Send to ALL
                 }
@@ -146,6 +154,7 @@ export class ChatServer {
                 if (this.isCurrentUserLeader(socket) && this.gameData.currentRound == 0) {
                     this.gameData.currentCommand = GameCommand.GENERATE_MAP;
                     this.generateNewMap();
+                    this.gameData.areCardsReady = true;
 
                     this.io.emit(GameCommand.GAME_STATUS, new ClientPackage(this.gameData)) // Send to ALL
                     this.logGameData();
@@ -153,7 +162,7 @@ export class ChatServer {
             });
 
             socket.on(GameCommand.START_GAME, () => {
-                if (this.isCurrentUserLeader(socket) && this.gameData.currentRound == 0) {
+                if (this.isCurrentUserLeader(socket) && this.gameData.currentRound == 0 && this.gameData.areCardsReady == true) {
                     this.gameData.currentCommand = GameCommand.START_GAME;
                     this.gameData.currentRound = 1; // Start game!
 
@@ -163,10 +172,12 @@ export class ChatServer {
             });
 
             socket.on(GameCommand.HINT, (hint: string) => {
-                if (this.isCurrentUserTeamLeader(socket) && this.gameData.currentRound !== 0) {
+                if (this.isCurrentUserTeamLeader(socket) && this.gameData.currentRound !== 0 && hint) {
                     this.gameData.currentCommand = GameCommand.HINT;
+                    this.gameData.currentHint = hint;
 
                     this.io.emit(GameCommand.HINT, hint) // Send to ALL (Maybe we want 'Send to ALL - EXCEPT Client'?)
+                    this.io.emit(GameCommand.GAME_STATUS, new ClientPackage(this.gameData)) // Send to ALL
                 }
             });
 
@@ -434,7 +445,7 @@ export class ChatServer {
 
         let sendToAll: boolean = false;
 
-        // Remove UserType if Leader
+        // Inform if UserType is Leader
         if (currentUser.userType == UserType.RedLeader) {
             this.gameData.isRedLeaderAvailable = true;
             sendToAll = true;

@@ -72,14 +72,16 @@ export class GameSetup {
 export class GameData {
     id: string = null; // Random guid
     cards: Card[] = [];
-
+    areCardsReady: boolean = false;
+    
     isRedLeaderAvailable: boolean = true;
-    isBlueLeaderAvailable: boolean = true;    
+    isBlueLeaderAvailable: boolean = true;
     
     currentCommand: GameCommand = null;
     currentRound: number = 0; // 0 - New Game, 1 - First Round
     currentTeam: Team = null;
-    
+    currentHint: string = null;
+
     isGameEnded: boolean = false;
     winningTeam: Team = null;
 }

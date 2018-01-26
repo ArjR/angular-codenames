@@ -6,7 +6,7 @@ import { Observable } from 'rxjs/Observable';
 import { TimerObservable } from "rxjs/observable/TimerObservable";
 
 import { SocketService } from '../services/socket.service';
-import { Message, GameCommand, ClientPackage, UserType, User, GameData, CardType, Card } from '../../../server/model/game-classes';
+import { Message, GameCommand, ClientPackage, UserType, User, GameData, CardType, Card, Team } from '../../../server/model/game-classes';
 import { ToasterService, Toast } from 'angular2-toaster';
 import { ModalDirective } from 'ngx-bootstrap/modal';
 import { ToasterConfig } from 'angular2-toaster/src/toaster-config';
@@ -19,10 +19,11 @@ import { ToasterConfig } from 'angular2-toaster/src/toaster-config';
 })
 export class DashboardComponent {
   @ViewChild('userModal') userModal: ModalDirective; // ngx-bootstrap modal
+  @ViewChild('hintModal') hintModal: ModalDirective; // ngx-bootstrap modal
+  @ViewChild('confirmPickModal') confirmPickModal: ModalDirective; // ngx-bootstrap modal
   UserType = UserType; // To use Enum for Angular markup
   CardType = CardType; // To use Enum for Angular markup
-
-  form: FormGroup;
+  Team = Team; // To use Enum for Angular markup
 
   private receiveAuthenticatedSubscription: Subscription;
   private receiveGameStatusSubscription: Subscription;
@@ -31,6 +32,8 @@ export class DashboardComponent {
 
   user: User = null;
   gameData: GameData = null;
+  hint: string = null;
+  pickedCard: Card = null;
 
   sendGameDebugSubscription: Subscription;
 
@@ -44,11 +47,6 @@ export class DashboardComponent {
     private fb: FormBuilder,
     private socketService: SocketService,
     private toasterService: ToasterService) {
-
-    this.form = fb.group({
-      text: ['', Validators.required],
-      name: ['', Validators.required]
-    });
   }
 
   ngOnInit() {
@@ -95,39 +93,88 @@ export class DashboardComponent {
     this.socketService.sendAuthenticate();
   }
 
-  public callLogin(userType: UserType) {
+  public callLogin(userType: UserType): void {
     this.socketService.sendLogin(userType);
   }
 
-  public callLogout() {
+  public callLogout(): void {
     this.socketService.sendLogout();
   }
 
-  public callNewGame() {
+  public callNewGame(): void {
     this.socketService.sendNewGame();
   }
 
-  public callGenerateWords() {
+  public callGenerateWords(): void {
     this.socketService.sendGenerateWords();
   }
 
-  public callGenerateWord(id: number) {
+  public callGenerateWord(id: number): void {
     this.socketService.sendGenerateWord(id);
   }
 
-  public callGenerateMap() {
+  public callGenerateMap(): void {
     this.socketService.sendGenerateMap();
   }
 
-  public callStartGame() {
+  public callStartGame(): void {
     this.socketService.sendStartGame();
   }
 
-  public callSendHint() {
-    this.socketService.sendHint('TEST HINT');
+  public callHint(): void {
+    this.socketService.sendHint(this.hint);
+    this.hideHintModal();
   }
 
-  public popToast() {
+  public callGuessCard(id: number): void {
+    this.socketService.sendGuessCard(id);
+  }
+
+  public callPickCard(): void {
+    this.socketService.sendPickCard(this.pickedCard.id);
+    this.hideConfirmPickModal();
+  }
+
+  public callNextRound(): void {
+    this.socketService.sendNextRound();
+  }
+
+  public callClick(card: Card): void {
+    if (card.isPlayed) return; // Ignore picked cards
+
+    this.pickedCard = card;
+
+    // If round hasn't started then GenerateWord
+    if (this.gameData.currentRound == 0) {
+      this.callGenerateWord(card.id);
+    } else {
+      // Round has started
+      // Pick Card
+      if ((this.user.userType == UserType.RedLeader && this.gameData.currentTeam == Team.Red)
+        || (this.user.userType == UserType.BlueLeader && this.gameData.currentTeam == Team.Blue)) {
+        this.showConfirmPickModal();
+      }
+    }
+  }
+
+  public getCardRows(): Card[][] {
+    let cards: Card[][] = [];
+    let cardRow: Card[] = [];
+    let i = 0;
+    this.gameData.cards.forEach(card => {
+      if (i % 5 == 0) {
+        cardRow = [];
+        cards.push(cardRow);
+      }
+
+      cardRow.push(card);
+      i++;
+    });
+
+    return cards;
+  }
+
+  public popToast(): void {
     let toast: Toast = {
       type: 'success',
       title: 'Here is a Toast Title',
@@ -137,7 +184,7 @@ export class DashboardComponent {
     this.toasterService.pop(toast);
   }
 
-  public popHint(hint: string) {
+  public popHint(hint: string): void {
     let toast: Toast = {
       type: 'success',
       title: 'Here is a Hint',
@@ -147,7 +194,7 @@ export class DashboardComponent {
     this.toasterService.pop(toast);
   }
 
-  public popGameDebug(message: Message) {
+  public popGameDebug(message: Message): void {
     let toast: Toast = {
       type: 'info',
       title: 'Game Debug',
@@ -167,28 +214,29 @@ export class DashboardComponent {
     this.userModal.hide();
   }
 
-  public assignCardTypeClass(card: Card): string {
-    let classString: string = null;
+  public showHintModal(): void {
+    this.hint = null;
 
-    switch (card.cardType) {
-      case CardType.RedCard:
-        classString = 'btn-danger';
-        break;
-      case CardType.BlueCard:
-        classString = 'btn-primary';
-        break;
-      case CardType.AssassinCard:
-        classString = 'btn-dark';
-        break;
-      case CardType.InnocentCard:
-        classString = 'btn-secondary';
-        break;
-      case null:
-        classString = '';
-        break;
+    if ((this.user.userType == UserType.RedLeader && this.gameData.currentTeam == Team.Red)
+      || (this.user.userType == UserType.BlueLeader && this.gameData.currentTeam == Team.Blue)) {
+      this.hintModal.show();
     }
+  }
 
-    return classString;
+  public hideHintModal(): void {
+    this.hintModal.hide();
+  }
+
+  public showConfirmPickModal(): void {
+
+    if ((this.user.userType == UserType.RedLeader && this.gameData.currentTeam == Team.Red)
+      || (this.user.userType == UserType.BlueLeader && this.gameData.currentTeam == Team.Blue)) {
+      this.confirmPickModal.show();
+    }
+  }
+
+  public hideConfirmPickModal(): void {
+    this.confirmPickModal.hide();
   }
 
   ngOnDestroy() {
