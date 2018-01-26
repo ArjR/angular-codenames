@@ -19,8 +19,6 @@
 </div>
 
 <!-- Specifically for Modal -->
-<button type="button" class="btn btn-primary" (click)="showUserModal()">Login</button>
-
 <div class="modal fade" bsModal #userModal="bs-modal" [config]="modalConfig">
   <div class="modal-dialog">
     <div class="modal-content">
@@ -80,11 +78,9 @@
   </div>
 </div>
 
-<!-- For Toaster Service -->
-<button class="btn btn-success" (click)="popToast()">Pop Toast</button>
-
 <hr>
 
+<button class="btn btn-primary" (click)="showUserModal()">Login</button>
 <button class="btn btn-success" (click)="callLogout()">Logout</button>
 <button class="btn btn-success" (click)="callNewGame()">New Game</button>
 <button class="btn btn-success" (click)="callGenerateWords()">Generate Words</button>

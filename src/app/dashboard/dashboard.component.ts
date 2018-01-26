@@ -174,16 +174,6 @@ export class DashboardComponent {
     return cards;
   }
 
-  public popToast(): void {
-    let toast: Toast = {
-      type: 'success',
-      title: 'Here is a Toast Title',
-      body: 'Here is a Toast Body'
-    };
-
-    this.toasterService.pop(toast);
-  }
-
   public popHint(hint: string): void {
     let toast: Toast = {
       type: 'success',
