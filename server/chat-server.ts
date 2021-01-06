@@ -3,7 +3,7 @@ import * as express from 'express';
 import * as socketIo from 'socket.io';
 import * as _ from 'lodash';
 
-import { User, Message, GameCommand, GameSetup, GameData, ClientPackage, UserType, CardType, Team, Card, GuidGenerator } from './model/game-classes';
+import { User, Message, GameCommand, GameSetup, GameData, ClientPackage, UserType, CardType, Team, Card, GuidGenerator, WordType } from './model/game-classes';
 import { serverPort } from './config';
 import { RandomWordService } from './services/random-word.service';
 import { isContext } from 'vm';
@@ -119,6 +119,7 @@ export class ChatServer {
                     this.gameData.currentRound = 0;
                     this.gameData.currentTeam = null;
                     this.gameData.currentHint = null;
+                    this.gameData.currentWordType = _.first(this.gameSetup.allWordTypes);
                     this.gameData.isGameEnded = false;
                     this.gameData.winningTeam = null;
                     this.gameData.areCardsReady = false;
@@ -322,7 +323,7 @@ export class ChatServer {
         });
 
         while (randomWords.length < this.gameData.cards.length) {
-            let newWord = this.randomWordService.getRandomOfficialWord();
+            let newWord = this.randomWordService.getRandomOfficialWord(this.gameData.currentWordType);
             if (!_.find(randomWords, word => word == newWord)) {
                 randomWords.push(newWord);
             }
@@ -351,7 +352,7 @@ export class ChatServer {
         let oldWord: string = oldCard.word;
 
         while (keepSearching) {
-            let newWord = this.randomWordService.getRandomOfficialWord();
+            let newWord = this.randomWordService.getRandomOfficialWord(this.gameData.currentWordType);
             if (!_.find(randomWords, word => word == newWord)) {
                 if (oldCard.word != newWord) {
                     oldCard.word = newWord;

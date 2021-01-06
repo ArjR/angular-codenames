@@ -18,6 +18,11 @@ export enum CardType {
     InnocentCard
 }
 
+export enum WordType {
+    Official,
+    Snow,
+}
+
 export class GameCommand {
     static AUTHENTICATE: string = 'Authenticate'; // Rejoined connection / timeout will validate           [Client-Server]  <--
     static LOGIN: string = 'Login'; // New connection will pick a UserType given from GameData             [Client-Server]  <--
@@ -65,6 +70,7 @@ export class GameSetup {
 
     allTeams: Team[] = [Team.Red, Team.Blue];
     allCardTypes: CardType[] = [CardType.RedCard, CardType.BlueCard, CardType.AssassinCard, CardType.InnocentCard];
+    allWordTypes: WordType[] = [WordType.Official, WordType.Snow]; // Official is first as default during setup
 
     users: User[] = [];
 }
@@ -81,6 +87,7 @@ export class GameData {
     currentRound: number = 0; // 0 - New Game, 1 - First Round
     currentTeam: Team = null;
     currentHint: string = null;
+    currentWordType: WordType = null;
 
     isGameEnded: boolean = false;
     winningTeam: Team = null;

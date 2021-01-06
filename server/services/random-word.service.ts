@@ -2,9 +2,12 @@ import * as fs from 'fs';
 import * as path from 'path';
 import * as _ from 'lodash';
 import officialWords from '../data/official-words';
+import snowWords from '../data/snow-words';
+import { WordType } from '../model/game-classes';
 
 export class RandomWordService {
     private officialWords: string[] = officialWords;
+    private snowWords: string[] = snowWords;
     //private officialWordsFileLocation: string = '/../../server/data/official.txt';
 
     constructor() {
@@ -20,11 +23,26 @@ export class RandomWordService {
         // });
     }
 
-    public getAllOfficialWords() : string[]{
+    public getAllOfficialWords(): string[] {
         return this.officialWords;
     }
 
-    public getRandomOfficialWord(): string {
-        return _.sample(this.officialWords);
+    public getRandomOfficialWord(wordType: WordType): string {
+
+        let words: string[] = null;
+
+        switch (wordType) {
+            case WordType.Official:
+                words = this.officialWords;
+                break;
+            case WordType.Snow:
+                words = this.snowWords;
+                break;
+            case null:
+                words = this.officialWords;
+                break;
+        }
+
+        return _.sample(words);
     }
 }

@@ -22,8 +22,9 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { ToasterModule, ToasterService } from 'angular2-toaster';
 import { ModalModule } from 'ngx-bootstrap';
 
-const config: SocketIoConfig = { url: 'https://angular-codenames.herokuapp.com', options: {} };
-//const config: SocketIoConfig = { url: 'http://localhost:4300', options: {} };
+// This provides the API Endpoint for the FrontEnd
+const config: SocketIoConfig = { url: 'https://angular-codenames.herokuapp.com', options: {} }; // Production
+//const config: SocketIoConfig = { url: 'http://localhost:4300', options: {} }; // Local
 
 @NgModule({
   declarations: [
