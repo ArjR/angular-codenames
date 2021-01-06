@@ -91,7 +91,6 @@
 <button class="btn btn-success" (click)="callStartGame()" [disabled]="!isCurrentUserLeader()">Start Game</button>
 <button class="btn btn-success" (click)="showHintModal()" [disabled]="!isCurrentUserLeader()">Send Hint</button>
 <button class="btn btn-success" (click)="callNextRound()" [disabled]="!isCurrentUserLeader()">Next Round</button>
+<button class="btn" [ngClass]="{'btn-light': !isDebug, 'btn-dark': isDebug }" (click)="callToggleDebug()">🐛</button>
 
 <hr>
-
-<pre>PRE HTML TAG</pre>

@@ -35,6 +35,7 @@ export class DashboardComponent {
   gameData: GameData = null;
   hint: string = null;
   pickedCard: Card = null;
+  isDebug: boolean = false;
 
   sendGameDebugSubscription: Subscription;
 
@@ -144,6 +145,10 @@ export class DashboardComponent {
     this.socketService.sendNextRound();
   }
 
+  public callToggleDebug(): void {
+    this.isDebug = !this.isDebug;
+  }
+
   public callClick(card: Card): void {
     if (card.isPlayed) return; // Ignore picked cards
 
@@ -198,7 +203,9 @@ export class DashboardComponent {
 
     console.log(`${Date.now()} ${message.content} Server:${message.timestamp} --- Delta:${Date.now() - message.timestamp}ms`);
 
-    this.toasterService.pop(toast);
+    if (this.isDebug) {
+      this.toasterService.pop(toast);
+    }
   }
 
   public showUserModal(): void {
