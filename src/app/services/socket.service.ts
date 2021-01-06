@@ -47,6 +47,12 @@ export class SocketService {
             .emit(GameCommand.NEW_GAME);
     }
 
+    sendChangeTheme() {
+        console.log('SEND GameCommand.CHANGE_THEME');
+        this.socket
+            .emit(GameCommand.CHANGE_THEME);
+    }
+
     sendGenerateWords() {
         console.log('SEND GameCommand.GENERATE_WORDS');
         this.socket

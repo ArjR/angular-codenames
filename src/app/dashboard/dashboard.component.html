@@ -1,8 +1,10 @@
 <h2>Code Names</h2>
 
 <pre *ngIf="gameData && gameData.currentCommand != null" class="mb-0">Current Command: {{gameData.currentCommand}}</pre>
+<pre *ngIf="gameData && this.user != null" class="mb-0">Current User: {{UserType[this.user.userType]}}</pre>
 <pre *ngIf="gameData && gameData.currentRound != null" class="mb-0">Current Round: {{gameData.currentRound}}</pre>
 <pre *ngIf="gameData && gameData.currentTeam != null" class="mb-0">Current Team: {{Team[gameData.currentTeam]}}</pre>
+<pre *ngIf="gameData && gameData.currentWordType != null" class="mb-0">Current Word Type: {{WordType[gameData.currentWordType]}}</pre>
 <pre *ngIf="gameData && gameData.currentHint != null" class="mb-0">Current Hint: {{gameData.currentHint}}</pre>
 <pre *ngIf="gameData" class="mb-0">Is Game Ended: {{gameData.isGameEnded}}</pre>
 <pre *ngIf="gameData && gameData.winningTeam != null" class="mb-0">Winning Team: {{Team[gameData.winningTeam]}}</pre>
@@ -82,12 +84,13 @@
 
 <button class="btn btn-primary" (click)="showUserModal()">Login</button>
 <button class="btn btn-success" (click)="callLogout()">Logout</button>
-<button class="btn btn-success" (click)="callNewGame()">New Game</button>
-<button class="btn btn-success" (click)="callGenerateWords()">Generate Words</button>
-<button class="btn btn-success" (click)="callGenerateMap()">Generate Map</button>
-<button class="btn btn-success" (click)="callStartGame()">Start Game</button>
-<button class="btn btn-success" (click)="showHintModal()">Send Hint</button>
-<button class="btn btn-success" (click)="callNextRound()">Next Round</button>
+<button class="btn btn-success" (click)="callNewGame()" [disabled]="!isCurrentUserLeader()">New Game</button>
+<button class="btn btn-success" (click)="callChangeTheme()" [disabled]="!isCurrentUserLeader()">Change Theme</button>
+<button class="btn btn-success" (click)="callGenerateWords()" [disabled]="!isCurrentUserLeader()">Generate Words</button>
+<button class="btn btn-success" (click)="callGenerateMap()" [disabled]="!isCurrentUserLeader()">Generate Map</button>
+<button class="btn btn-success" (click)="callStartGame()" [disabled]="!isCurrentUserLeader()">Start Game</button>
+<button class="btn btn-success" (click)="showHintModal()" [disabled]="!isCurrentUserLeader()">Send Hint</button>
+<button class="btn btn-success" (click)="callNextRound()" [disabled]="!isCurrentUserLeader()">Next Round</button>
 
 <hr>
 

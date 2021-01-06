@@ -6,7 +6,7 @@ import { Observable } from 'rxjs/Observable';
 import { TimerObservable } from "rxjs/observable/TimerObservable";
 
 import { SocketService } from '../services/socket.service';
-import { Message, GameCommand, ClientPackage, UserType, User, GameData, CardType, Card, Team } from '../../../server/model/game-classes';
+import { Message, GameCommand, ClientPackage, UserType, User, GameData, CardType, Card, Team, WordType } from '../../../server/model/game-classes';
 import { ToasterService, Toast } from 'angular2-toaster';
 import { ModalDirective } from 'ngx-bootstrap/modal';
 import { ToasterConfig } from 'angular2-toaster/src/toaster-config';
@@ -24,6 +24,7 @@ export class DashboardComponent {
   UserType = UserType; // To use Enum for Angular markup
   CardType = CardType; // To use Enum for Angular markup
   Team = Team; // To use Enum for Angular markup
+  WordType = WordType; // To use Enum for Angular markup
 
   private receiveAuthenticatedSubscription: Subscription;
   private receiveGameStatusSubscription: Subscription;
@@ -103,6 +104,10 @@ export class DashboardComponent {
 
   public callNewGame(): void {
     this.socketService.sendNewGame();
+  }
+
+  public callChangeTheme(): void {
+    this.socketService.sendChangeTheme();
   }
 
   public callGenerateWords(): void {
@@ -227,6 +232,14 @@ export class DashboardComponent {
 
   public hideConfirmPickModal(): void {
     this.confirmPickModal.hide();
+  }
+
+  public isCurrentUserLeader(): boolean {
+    if (this.user && (this.user.userType == UserType.RedLeader || this.user.userType == UserType.BlueLeader)) {
+      return true;
+    } else {
+      return false;
+    }
   }
 
   ngOnDestroy() {

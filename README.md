@@ -103,6 +103,12 @@ Server will start a new game and regenerate GameData:
                 currentTeam: null
 `SERVER SEND ALL` *GameStatus (GameData)*
 
+`CLIENT SEND` *ChangeTheme*
+#Check command is Leader UserType and GameData(Round == 0)
+Server will adjust GameData:
+                currentWordType: switch to next WordType
+`SERVER SEND ALL` *GameStatus (GameData)*
+
 `CLIENT SEND` *GenerateWords*
 #Check command is Leader UserType and GameData(Round == 0)
 Server will adjust GameData:

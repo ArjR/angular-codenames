@@ -30,6 +30,7 @@ export class GameCommand {
     static LOGOUT: string = 'Logout'; // Authenticated user will log out freeing a potential UserType      [Client-Server]  <--
     static GAME_STATUS: string = 'GameStatus'; // Sends the GameData to all connections                    [Server-Clients] -->> (Upon any new connections and server)
     static NEW_GAME: string = 'NewGame'; // Will start a new game and spymasters                           [Client-Server]  <--
+    static CHANGE_THEME: string = 'ChangeTheme'; // Spymasters can change theme of the words               [Client-Server]  <--
     static GENERATE_WORDS: string = 'GenerateWords'; // Spymasters can re-generate all words               [Client-Server]  <--
     static GENERATE_WORD: string = 'GenerateWord'; // Spymasters can re-generate a single word             [Client-Server]  <--
     static GENERATE_MAP: string = 'GenerateMap'; // Spymasters can re-generate the map (and starting team) [Client-Server]  <--

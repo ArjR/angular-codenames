@@ -119,10 +119,14 @@ export class ChatServer {
                     this.gameData.currentRound = 0;
                     this.gameData.currentTeam = null;
                     this.gameData.currentHint = null;
-                    this.gameData.currentWordType = _.first(this.gameSetup.allWordTypes);
                     this.gameData.isGameEnded = false;
                     this.gameData.winningTeam = null;
                     this.gameData.areCardsReady = false;
+
+                    // Use existing if available
+                    if (!this.gameData.currentWordType) {
+                        this.gameData.currentWordType = _.first(this.gameSetup.allWordTypes);
+                    }
 
                     this.createCards();
                     this.generateNewWords();
@@ -132,8 +136,27 @@ export class ChatServer {
                 }
             });
 
+            socket.on(GameCommand.CHANGE_THEME, () => {
+                if (this.isCurrentUserLeader(socket) && this.gameData.currentRound == 0 && this.gameData.currentCommand != null) {
+                    this.gameData.currentCommand = GameCommand.CHANGE_THEME;
+
+                    // Hack for now to switch between WordTypes
+                    if (this.gameData.currentWordType == WordType.Official) {
+                        this.gameData.currentWordType = WordType.Snow;
+                    }
+                    else {
+                        this.gameData.currentWordType = WordType.Official;
+                    }
+
+                    this.generateNewWords();
+                    this.gameData.areCardsReady = false;
+
+                    this.io.emit(GameCommand.GAME_STATUS, new ClientPackage(this.gameData)) // Send to ALL
+                }
+            });
+
             socket.on(GameCommand.GENERATE_WORDS, () => {
-                if (this.isCurrentUserLeader(socket) && this.gameData.currentRound == 0) {
+                if (this.isCurrentUserLeader(socket) && this.gameData.currentRound == 0 && this.gameData.currentCommand != null) {
                     this.gameData.currentCommand = GameCommand.GENERATE_WORDS;
                     this.generateNewWords();
                     this.gameData.areCardsReady = false;
@@ -143,7 +166,7 @@ export class ChatServer {
             });
 
             socket.on(GameCommand.GENERATE_WORD, (id: number) => {
-                if (this.isCurrentUserLeader(socket) && this.gameData.currentRound == 0 && this.getCard(id).cardType == null) {
+                if (this.isCurrentUserLeader(socket) && this.gameData.currentRound == 0 && this.gameData.currentCommand != null && this.getCard(id).cardType == null) {
                     this.gameData.currentCommand = GameCommand.GENERATE_WORD;
                     this.generateNewWord(id);
 
@@ -152,7 +175,7 @@ export class ChatServer {
             });
 
             socket.on(GameCommand.GENERATE_MAP, () => {
-                if (this.isCurrentUserLeader(socket) && this.gameData.currentRound == 0) {
+                if (this.isCurrentUserLeader(socket) && this.gameData.currentRound == 0 && this.gameData.currentCommand != null) {
                     this.gameData.currentCommand = GameCommand.GENERATE_MAP;
                     this.generateNewMap();
                     this.gameData.areCardsReady = true;
@@ -163,7 +186,7 @@ export class ChatServer {
             });
 
             socket.on(GameCommand.START_GAME, () => {
-                if (this.isCurrentUserLeader(socket) && this.gameData.currentRound == 0 && this.gameData.areCardsReady == true) {
+                if (this.isCurrentUserLeader(socket) && this.gameData.currentRound == 0 && this.gameData.currentCommand != null && this.gameData.areCardsReady == true) {
                     this.gameData.currentCommand = GameCommand.START_GAME;
                     this.gameData.currentRound = 1; // Start game!
 
@@ -173,7 +196,7 @@ export class ChatServer {
             });
 
             socket.on(GameCommand.HINT, (hint: string) => {
-                if (this.isCurrentUserTeamLeader(socket) && this.gameData.currentRound !== 0 && hint) {
+                if (this.isCurrentUserTeamLeader(socket) && this.gameData.currentRound !== 0 && this.gameData.currentCommand != null && hint) {
                     this.gameData.currentCommand = GameCommand.HINT;
                     this.gameData.currentHint = hint;
 
@@ -183,7 +206,7 @@ export class ChatServer {
             });
 
             socket.on(GameCommand.GUESS_CARD, (id: number) => {
-                if (this.isCurrentUserTeam(socket) && this.gameData.currentRound !== 0) {
+                if (this.isCurrentUserTeam(socket) && this.gameData.currentRound !== 0 && this.gameData.currentCommand != null) {
                     this.gameData.currentCommand = GameCommand.GUESS_CARD;
 
                     this.io.emit(GameCommand.GUESS_CARD, id) // Send to ALL (Maybe we want 'Send to ALL - EXCEPT Client'?)
@@ -191,7 +214,7 @@ export class ChatServer {
             });
 
             socket.on(GameCommand.PICK_CARD, (id: number) => {
-                if (this.isCurrentUserTeamLeader(socket) && this.gameData.currentRound !== 0) {
+                if (this.isCurrentUserTeamLeader(socket) && this.gameData.currentRound !== 0 && this.gameData.currentCommand != null) {
                     this.gameData.currentCommand = GameCommand.PICK_CARD;
 
                     let card = this.getCard(id);
@@ -236,7 +259,7 @@ export class ChatServer {
             });
 
             socket.on(GameCommand.NEXT_ROUND, () => {
-                if (this.isCurrentUserTeamLeader(socket) && this.gameData.currentRound !== 0) {
+                if (this.isCurrentUserTeamLeader(socket) && this.gameData.currentRound !== 0 && this.gameData.currentCommand != null) {
                     this.gameData.currentCommand = GameCommand.NEXT_ROUND;
                     this.gameData.currentRound++;
                     this.gameData.currentTeam = this.gameData.currentTeam == Team.Red ? Team.Blue : Team.Red;
